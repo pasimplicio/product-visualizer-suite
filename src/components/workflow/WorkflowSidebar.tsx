@@ -65,7 +65,7 @@ export const WorkflowSidebar: React.FC<WorkflowSidebarProps> = ({ onAddInstance,
         
         <div className="flex items-center justify-between pt-4 border-t">
           <div className="text-[9px] text-muted-foreground uppercase tracking-widest">
-            Nanobanana Suite
+            AI Product Suite
           </div>
           <ModeToggle />
         </div>

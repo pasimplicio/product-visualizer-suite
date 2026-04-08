@@ -142,7 +142,7 @@ export const InstanceNode = ({ data, id }: NodeProps<WorkflowNodeData>) => {
                   
                   const link = document.createElement('a');
                   link.href = blobUrl;
-                  link.download = `nanobanana-pov-${id}.png`;
+                  link.download = `ai-render-pov-${id}.png`;
                   document.body.appendChild(link);
                   link.click();
                   document.body.removeChild(link);
@@ -151,7 +151,7 @@ export const InstanceNode = ({ data, id }: NodeProps<WorkflowNodeData>) => {
                   // Fallback para caso de imagens externas com restrição de CORS
                   const link = document.createElement('a');
                   link.href = imgUrl;
-                  link.download = `nanobanana-pov-${id}.png`;
+                  link.download = `ai-render-pov-${id}.png`;
                   link.target = '_blank';
                   link.click();
                 }

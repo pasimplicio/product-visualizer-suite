@@ -15,7 +15,7 @@ const Index = () => {
           </div>
           <div>
             <h1 className="text-sm font-bold tracking-tight uppercase">Visualizer <span className="text-primary">Workflow</span></h1>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-widest leading-none">Nanobanana Node-Based Suite</p>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-widest leading-none">AI Node-Based Studio</p>
           </div>
         </div>
 
