@@ -128,7 +128,8 @@ export const WorkflowCanvas = () => {
       data: { 
         label: `Instância ${nodes.length}`, 
         prompt: 'Cinematic studio shot, high resolution, professional lighting.',
-        onUpdate: onUpdateNode 
+        onUpdate: onUpdateNode,
+        onDelete: onDeleteNode
       },
     };
     setNodes((nds) => [...nds, newNode]);
