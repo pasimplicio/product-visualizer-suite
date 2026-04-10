@@ -9,6 +9,8 @@ export interface WorkflowNodeData extends Record<string, unknown> {
   progress?: number;
   prompt?: string;
   resultImage?: string;
+  strength?: number;
+  cfgScale?: number;
   onUpdate?: (id: string, updates: Partial<WorkflowNodeData>) => void;
   onDelete?: (id: string) => void;
 }

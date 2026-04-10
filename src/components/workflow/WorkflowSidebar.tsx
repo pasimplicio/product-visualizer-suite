@@ -1,8 +1,9 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus, Image as ImageIcon, LayoutTemplate } from 'lucide-react';
+import { Plus, Image as ImageIcon, LayoutTemplate, Sparkles } from 'lucide-react';
 import { ModeToggle } from '@/components/mode-toggle';
 import { cn } from '@/lib/utils';
+import { Link } from 'react-router-dom';
 
 export interface WorkflowSidebarProps {
   onAddInstance: () => void;
@@ -41,6 +42,19 @@ export const WorkflowSidebar: React.FC<WorkflowSidebarProps> = ({ onAddInstance,
             <ImageIcon className="mr-3 h-4 w-4 opacity-50" />
             <span>Fonte Extra (Breve)</span>
           </Button>
+
+          {/* Link para WaveSpeed AI Studio */}
+          <Link to="/wavespeed" className="block">
+            <Button
+              variant="outline"
+              className="w-full flex justify-start items-center space-x-3 bg-gradient-to-r from-violet-500/10 to-fuchsia-500/10 border-violet-500/20 text-violet-400 hover:from-violet-500/20 hover:to-fuchsia-500/20 hover:text-violet-300 transition-all font-medium h-12"
+            >
+              <div className="bg-violet-500/20 p-1.5 rounded-md">
+                <Sparkles className="h-4 w-4" />
+              </div>
+              <span>WaveSpeed AI</span>
+            </Button>
+          </Link>
         </div>
       </div>
       

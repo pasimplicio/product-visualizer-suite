@@ -38,36 +38,76 @@ export const INITIAL_INSTANCES: GenerationInstance[] = [
   },
 ];
 
+/**
+ * Redimensiona uma imagem (Data URL) para garantir que ela não exceda as dimensões 
+ * ou peso suportados pela IA do Stability AI.
+ */
+async function resizeImage(dataUrl: string, maxWidth = 1024): Promise<string> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      let width = img.width;
+      let height = img.height;
+
+      if (width > maxWidth || height > maxWidth) {
+        if (width > height) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        } else {
+          width = Math.round((width * maxWidth) / height);
+          height = maxWidth;
+        }
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx?.drawImage(img, 0, 0, width, height);
+
+      // Exporta como PNG ou JPEG comprimido se necessário
+      resolve(canvas.toDataURL('image/png'));
+    };
+    img.src = dataUrl;
+  });
+}
+
 export class NanobananaService {
   /**
    * Simula a geração de uma imagem para uma instância específica.
    */
   static async generateImage(
-    instanceId: string,
-    sourceImage: string, // Base64 ou URL da imagem anexada
-    prompt: string,
-    onProgress: (progress: number) => void
+    sourceImage: string, 
+    prompt: string, 
+    strength: number = 0.85, 
+    cfgScale: number = 7, 
+    onProgress: (p: number) => void
   ): Promise<string> {
-    
-    // ==========================================
-    // INTERCEPTADOR DE API REAL DA STABILITY
-    // ==========================================
-    const API_KEY = import.meta.env.VITE_STABILITY_API_KEY;
-    const API_URL = import.meta.env.VITE_STABILITY_ENDPOINT || "https://api.stability.ai/v2beta/stable-image/generate/sd3";
+    try {
+        const API_KEY = import.meta.env.VITE_STABILITY_API_KEY;
+        // Mudança para o endpoint de Controle de Estrutura (melhor para novos contextos)
+        const API_URL = "/api/stability/v2beta/stable-image/control/structure";
 
-    if (API_KEY) {
-      console.log(`⚡ [Stability AI] Iniciando Conexão Oficial. Traduzindo imagem para o Robô...`);
-      try {
-        onProgress(15);
+        if (!API_KEY || API_KEY === 'sua_chave_aqui') {
+          throw new Error("API Key não configurada no arquivo .env");
+        }
+
+        onProgress(5);
         
-        // As IAs reais exigem que a foto viaje como um "Arquivo de Formulário" (Multipart)
+        const optimizedImage = await resizeImage(sourceImage);
+        onProgress(15);
+
         const formData = new FormData();
-        const imageBlob = dataURLtoBlob(sourceImage);
+        // O endpoint de estrutura não usa 'mode', ele já é especializado
+        
+        const imageResponse = await fetch(optimizedImage);
+        const imageBlob = await imageResponse.blob();
         
         formData.append('image', imageBlob, 'product.png');
-        formData.append('prompt', prompt);
-        formData.append('mode', 'image-to-image');
-        formData.append('strength', '0.50'); // Mantém muito do shape original (0 = Cópia / 1 = Novo desenho)
+        formData.append('prompt', prompt || 'Cinematic product photo');
+        
+        // No modo Structure, usamos 'control_strength'
+        formData.append('control_strength', strength.toString());
         formData.append('output_format', 'png');
 
         onProgress(30);
@@ -75,7 +115,6 @@ export class NanobananaService {
         const response = await fetch(API_URL, {
           method: "POST",
           headers: {
-            // Nota: NÃO inserimos "Content-Type" porque o navegador precisa calcular as amarras do 'multipart' sozinho.
             "Authorization": `Bearer ${API_KEY}`,
             "Accept": "application/json" 
           },
@@ -84,27 +123,42 @@ export class NanobananaService {
 
         if (!response.ok) {
           const errData = await response.json().catch(() => ({}));
-          console.error("Erro interno dos servidores IA:", errData);
-          throw new Error(`A Stability AI barrou o pacote com status: ${response.status}`);
+          console.error("Erro nos servidores IA:", errData);
+          
+          // Se acabar o crédito, entra em modo simulação para não travar o usuário
+          if (response.status === 402) {
+            toast.info("Créditos esgotados. Entrando em modo Simulação Acadêmica...");
+            return this.generateImageMock("fallback", sourceImage, prompt, onProgress);
+          }
+
+          const details = errData.errors?.join(", ") || errData.name || "Erro na API";
+          throw new Error(`${details} (Status: ${response.status})`);
         }
 
         onProgress(80);
         const data = await response.json();
         onProgress(100);
         
-        // O robô da Stability devolve um arquivo Base64 cru se der certo no JSON
         if (data.image) {
           return `data:image/png;base64,${data.image}`;
         }
         
-        throw new Error("Sucesso na geração, mas falha ao recuperar a imagem.");
-        
-      } catch (error) {
-        console.error("Erro Crítico no Endpoint:", error);
-        throw error;
-      }
+        throw new Error("Resposta da API sem dados de imagem");
+    } catch (error) {
+      console.error("Falha na geração Nanobanana:", error);
+      throw error;
     }
+  }
 
+  /**
+   * Simula a geração de uma imagem para uma instância específica.
+   */
+  static async generateImageMock(
+    instanceId: string,
+    sourceImage: string, // Base64 ou URL da imagem anexada
+    prompt: string,
+    onProgress: (progress: number) => void
+  ): Promise<string> {
     // ==========================================
     // MODO ESTATICO / MOCK FALLBACK (V1)
     // ==========================================

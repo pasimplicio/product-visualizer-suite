@@ -1,10 +1,11 @@
 import React from 'react';
 import { Handle, Position, NodeProps, NodeResizer } from '@xyflow/react';
-import { Sparkles, Loader2, CheckCircle2, AlertCircle, RefreshCw, Trash2 } from 'lucide-react';
+import { Sparkles, Loader2, CheckCircle2, AlertCircle, RefreshCw, Trash2, Gauge } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
+import { Slider } from '@/components/ui/slider';
 import { WorkflowNodeData } from '@/lib/workflow/types';
 import { cn } from '@/lib/utils';
 import { NanobananaService } from '@/lib/services/nanobanana';
@@ -14,6 +15,8 @@ export const InstanceNode = ({ data, id }: NodeProps<WorkflowNodeData>) => {
   const isGenerating = data.status === 'generating';
   const isCompleted = data.status === 'completed';
   const canGenerate = data.image && !isGenerating;
+  const currentStrength = data.strength ?? 0.85;
+  const currentCfg = data.cfgScale ?? 7;
 
   const handleGenerate = async () => {
     if (!data.image || !data.onUpdate) return;
@@ -21,11 +24,11 @@ export const InstanceNode = ({ data, id }: NodeProps<WorkflowNodeData>) => {
     data.onUpdate(id, { status: 'generating', progress: 0 });
 
     try {
-      // Simulação mais inteligente: Passamos o prompt para o serviço
       const result = await NanobananaService.generateImage(
-        id,
         data.image,
         data.prompt || '',
+        currentStrength,
+        currentCfg,
         (progress) => {
           data.onUpdate!(id, { progress });
         }
@@ -33,9 +36,12 @@ export const InstanceNode = ({ data, id }: NodeProps<WorkflowNodeData>) => {
 
       data.onUpdate(id, { status: 'completed', resultImage: result, progress: 100 });
       toast.success(`POV Gerado com sucesso!`);
-    } catch (err) {
+    } catch (err: any) {
       data.onUpdate(id, { status: 'error' });
-      toast.error(`Falha na instância ${data.label}`);
+      const errorMessage = err.message || "Erro desconhecido";
+      toast.error(`Falha na instância ${data.label}`, {
+        description: errorMessage
+      });
     }
   };
 
@@ -78,7 +84,7 @@ export const InstanceNode = ({ data, id }: NodeProps<WorkflowNodeData>) => {
         </div>
 
         <div className="p-4 flex flex-col space-y-4">
-          {/* Preview fixo no modelo 9:16 - Imagem não pode expandir esse div */}
+          {/* Preview fixo no modelo 9:16 */}
           <div className="relative w-full aspect-[9/16] h-[360px] mx-auto rounded-lg overflow-hidden bg-muted/30 border border-border flex items-center justify-center">
             {data.resultImage ? (
               <img src={data.resultImage} alt="Resultado" className="w-full h-full object-cover" />
@@ -105,19 +111,70 @@ export const InstanceNode = ({ data, id }: NodeProps<WorkflowNodeData>) => {
           )}
         </div>
 
-        {/* Editor de Prompt */}
-        <div className="space-y-2">
-          <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Configuração POV</label>
-          <Textarea 
-            value={data.prompt}
-            onChange={(e) => data.onUpdate?.(id, { prompt: e.target.value })}
-            placeholder="Descreva o cenário detalhadamente..."
-            className="min-h-[100px] text-xs bg-muted/50 border-border resize-y"
-            disabled={isGenerating}
-          />
+        {/* CONTROLES DE IA */}
+        <div className="space-y-4 bg-muted/20 p-3 rounded-lg border border-border/50">
+          {/* Slider de Strength (Criatividade) */}
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <label className="text-[10px] font-bold text-muted-foreground uppercase flex items-center gap-1">
+                <Gauge className="h-3 w-3 text-orange-400" />
+                Criatividade vs Fidelidade
+              </label>
+              <span className="text-[10px] font-mono font-bold text-primary">{Math.round(currentStrength * 100)}%</span>
+            </div>
+            <Slider
+              value={[currentStrength]}
+              min={0.1}
+              max={1.0}
+              step={0.05}
+              onValueChange={(vals) => data.onUpdate?.(id, { strength: vals[0] })}
+              disabled={isGenerating}
+              className="py-1"
+            />
+            <div className="flex justify-between text-[8px] text-muted-foreground font-medium uppercase px-0.5">
+              <span>Mais Fiel</span>
+              <span>Mais Criativo</span>
+            </div>
+          </div>
+
+          {/* Slider de CFG Scale (Obediência ao Prompt) */}
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <label className="text-[10px] font-bold text-muted-foreground uppercase flex items-center gap-1">
+                <Sparkles className="h-3 w-3 text-purple-400" />
+                Obediência ao Prompt
+              </label>
+              <span className="text-[10px] font-mono font-bold text-primary">Nível {currentCfg}</span>
+            </div>
+            <Slider
+              value={[currentCfg]}
+              min={1}
+              max={10}
+              step={1}
+              onValueChange={(vals) => data.onUpdate?.(id, { cfgScale: vals[0] })}
+              disabled={isGenerating}
+              className="py-1"
+            />
+            <div className="flex justify-between text-[8px] text-muted-foreground font-medium uppercase px-0.5">
+              <span>Solto</span>
+              <span>Rigoroso</span>
+            </div>
+          </div>
+
+          {/* Editor de Prompt */}
+          <div className="space-y-2">
+            <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Configuração POV</label>
+            <Textarea 
+              value={data.prompt}
+              onChange={(e) => data.onUpdate?.(id, { prompt: e.target.value })}
+              placeholder="Descreva o cenário detalhadamente..."
+              className="min-h-[80px] text-xs bg-muted/50 border-border resize-none"
+              disabled={isGenerating}
+            />
+          </div>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 pt-2">
           <Button 
             disabled={!canGenerate}
             onClick={handleGenerate}

@@ -3,6 +3,7 @@ import { WorkflowCanvas } from '@/components/workflow/WorkflowCanvas';
 import { Sparkles, HelpCircle, LayoutGrid } from 'lucide-react';
 import { Toaster } from '@/components/ui/sonner';
 import { ModeToggle } from '@/components/mode-toggle';
+import { Link } from 'react-router-dom';
 
 const Index = () => {
   return (
@@ -24,6 +25,16 @@ const Index = () => {
             <LayoutGrid className="h-3 w-3" />
             <span>MODO WORKFLOW ATIVO</span>
           </div>
+
+          {/* Link para WaveSpeed AI Studio */}
+          <Link
+            to="/wavespeed"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-md text-[11px] font-bold uppercase tracking-wider bg-gradient-to-r from-violet-500/10 to-fuchsia-500/10 border border-violet-500/20 text-violet-400 hover:from-violet-500/20 hover:to-fuchsia-500/20 hover:text-violet-300 transition-all"
+          >
+            <Sparkles className="h-3 w-3" />
+            WaveSpeed AI
+          </Link>
+
           <ModeToggle />
           <button className="text-muted-foreground hover:text-foreground transition-colors">
             <HelpCircle className="h-5 w-5" />

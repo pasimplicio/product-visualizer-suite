@@ -8,6 +8,19 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    proxy: {
+      '/api/stability': {
+        target: 'https://api.stability.ai',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/stability/, ''),
+      },
+      '/api/wavespeed': {
+        target: 'https://api.wavespeed.ai',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/wavespeed/, '/api/v3'),
+        secure: false, // Bypass para certificado do proxy/firewall corporativo
+      },
+    },
     hmr: {
       overlay: false,
     },
