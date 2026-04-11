@@ -128,6 +128,8 @@ export const WorkflowCanvas = () => {
       data: { 
         label: `Instância ${nodes.length}`, 
         prompt: 'Cinematic studio shot, high resolution, professional lighting.',
+        aiModel: 'flux-schnell',
+        generationType: 'image',
         onUpdate: onUpdateNode,
         onDelete: onDeleteNode
       },

@@ -11,17 +11,26 @@
 
 /** Modelos de geração de IMAGEM */
 export type WaveSpeedImageModel =
-  | 'seedream-4.0'
-  | 'flux-dev'
-  | 'flux-schnell';
+  | 'google/nano-banana/text-to-image'
+  | 'wavespeed-ai/phota/text-to-image'
+  | 'openai/dall-e-3'
+  | 'google/gemini-2.5-flash-image/text-to-image'
+  | 'wavespeed-ai/flux-1-srpo/image-to-image'
+  | 'minimax/image-01/image-to-image'
+  | 'google/nano-banana-2/edit'
+  | 'google/nano-banana-pro/edit'
+  | 'alibaba/wan-2.2/image-to-image'
+  | 'stability-ai/stable-diffusion-3.5-large';
 
 /** Modelos de geração de VÍDEO */
 export type WaveSpeedVideoModel =
-  | 'seedance-1.0-lite'
-  | 'hailuo-02'
-  | 'kling-v2.1'
-  | 'wan-2.5'
-  | 'veo3-fast';
+  | 'kwaivgi/kling-v3.0-std/text-to-video'
+  | 'alibaba/wan-2.2/t2v-plus-1080p'
+  | 'alibaba/wan-2.2/i2v-plus-1080p'
+  | 'openai/sora-2-pro/text-to-video'
+  | 'minimax/hailuo-02/fast'
+  | 'pika/v2.2-t2v'
+  | 'vidu/image-to-video-q2-pro';
 
 /** Union de todos os modelos */
 export type WaveSpeedModel = WaveSpeedImageModel | WaveSpeedVideoModel;
@@ -36,8 +45,9 @@ export interface WaveSpeedModelInfo {
   type: WaveSpeedModelType;
   description: string;
   price: string;
-  endpoint: string;
-  exclusive: boolean;
+  apiPath: string; // Caminho unificado (ex: google/nano-banana-2-text-to-image)
+  exclusive?: boolean;
+  hot?: boolean; // Adicionado suporte para flag HOT visualmente
   icon: string; // Emoji ou ícone representativo
 }
 
@@ -64,6 +74,7 @@ export interface WaveSpeedBalance {
 export interface ImageGenerationParams {
   prompt: string;
   model: WaveSpeedImageModel;
+  image?: string;
   size?: string;
   num_inference_steps?: number;
   seed?: number;
@@ -87,87 +98,139 @@ export interface VideoGenerationParams {
 export const WAVESPEED_MODELS: WaveSpeedModelInfo[] = [
   // ─── MODELOS DE IMAGEM ───
   {
-    id: 'seedream-4.0',
-    name: 'Seedream 4.0',
+    id: 'google/nano-banana-2/edit',
+    name: 'Nano Banana 2 (I2I)',
     type: 'image',
-    description: 'Modelo exclusivo ByteDance para imagens de alta qualidade com detalhamento superior.',
-    price: '$0.027/img',
-    endpoint: '/bytedance/seedream-4.0/txt2img',
+    description: 'Versão oficial Nano Banana 2 focada em Image-to-Image (Edit). Mantém fortíssima fidelidade.',
+    price: '$0.07/img',
+    apiPath: 'google/nano-banana-2/edit',
+    hot: true,
+    icon: '🍌',
+  },
+  {
+    id: 'google/nano-banana-pro/edit',
+    name: 'Nano Banana Pro (I2I)',
+    type: 'image',
+    description: 'Versão PRO oficial do Nano Banana para edições I2I de altíssima definição.',
+    price: '$0.15/img',
+    apiPath: 'google/nano-banana-pro/edit',
     exclusive: true,
-    icon: '🌱',
+    icon: '🍌',
   },
   {
-    id: 'flux-dev',
-    name: 'FLUX 1.1 Dev',
+    id: 'wavespeed-ai/flux-1-srpo/image-to-image',
+    name: 'Flux SRPO (I2I)',
     type: 'image',
-    description: 'Modelo Black Forest Labs otimizado para desenvolvimento e iteração rápida.',
+    description: 'Modelo Flux nativo otimizado para fidelidade máxima de alteração (Image-to-Image).',
     price: '$0.025/img',
-    endpoint: '/black-forest-labs/flux-1.1-dev/txt2img',
-    exclusive: false,
-    icon: '⚡',
+    apiPath: 'wavespeed-ai/flux-1-srpo/image-to-image',
+    hot: true,
+    icon: 'F',
   },
   {
-    id: 'flux-schnell',
-    name: 'FLUX 1.1 Schnell',
+    id: 'minimax/image-01/image-to-image',
+    name: 'Minimax Image 01 (I2I)',
     type: 'image',
-    description: 'Geração ultra-rápida com custo mínimo. Ideal para prototipação.',
-    price: '$0.003/img',
-    endpoint: '/black-forest-labs/flux-1.1-schnell/txt2img',
-    exclusive: false,
-    icon: '🚀',
+    description: 'Modelo Minimax altamente fidedigno para edição de imagem baseada em referência.',
+    price: '$0.06/img',
+    apiPath: 'minimax/image-01/image-to-image',
+    icon: 'M',
+  },
+  {
+    id: 'google/nano-banana/text-to-image',
+    name: 'Nano Banana',
+    type: 'image',
+    description: 'Modelo oficial do Google Nano Banana Text To Image. Qualidade impressionante.',
+    price: '$0.038/img',
+    apiPath: 'google/nano-banana/text-to-image',
+    hot: true,
+    icon: '🍌',
+  },
+  {
+    id: 'google/gemini-2.5-flash-image/text-to-image',
+    name: 'Gemini 2.5 Flash',
+    type: 'image',
+    description: 'Modelo oficial Google Gemini 2.5 Flash Text to Image.',
+    price: '$0.038/img',
+    apiPath: 'google/gemini-2.5-flash-image/text-to-image',
+    icon: 'G',
+  },
+  {
+    id: 'openai/dall-e-3',
+    name: 'DALL-E 3',
+    type: 'image',
+    description: 'Gerador nativo e potente de imagens da linha OpenAI DALL-E 3.',
+    price: '$0.04/img',
+    apiPath: 'openai/dall-e-3',
+    icon: 'O',
+  },
+  {
+    id: 'alibaba/wan-2.2/image-to-image',
+    name: 'WAN 2.2 I2I',
+    type: 'image',
+    description: 'A v2.2 do modelo WAN. Excelente para Image-to-Image styling.',
+    price: '$0.02/img',
+    apiPath: 'alibaba/wan-2.2/image-to-image',
+    icon: 'W',
+  },
+  {
+    id: 'wavespeed-ai/phota/text-to-image',
+    name: 'Phota T2I',
+    type: 'image',
+    description: 'Modelo exclusivo WaveSpeed Phota focado em fotografia realista.',
+    price: '$0.09/img',
+    apiPath: 'wavespeed-ai/phota/text-to-image',
+    icon: '📸',
   },
 
   // ─── MODELOS DE VÍDEO ───
   {
-    id: 'seedance-1.0-lite',
-    name: 'Seedance 1.0 Lite',
+    id: 'kwaivgi/kling-v3.0-std/text-to-video',
+    name: 'Kling 3.0 (Std)',
     type: 'video',
-    description: 'Modelo exclusivo ByteDance para vídeos curtos com fidelidade visual impressionante.',
-    price: '$0.08/5s',
-    endpoint: '/bytedance/seedance-1.0-lite/txt2video',
+    description: 'A mais recente geração de modelo de vídeo da classe Kling 3.0 Standard.',
+    price: '$0.42/5s',
+    apiPath: 'kwaivgi/kling-v3.0-std/text-to-video',
+    hot: true,
+    icon: 'K',
+  },
+  {
+    id: 'alibaba/wan-2.2/t2v-plus-1080p',
+    name: 'WAN 2.2 T2V 1080p',
+    type: 'video',
+    description: 'Converte texto para vídeo em 1080p usando Alibaba WAN 2.2.',
+    price: '$0.20/5s',
+    apiPath: 'alibaba/wan-2.2/t2v-plus-1080p',
+    icon: '🌐',
+  },
+  {
+    id: 'openai/sora-2-pro/text-to-video',
+    name: 'Sora 2 Pro',
+    type: 'video',
+    description: 'Modelo oficial Sora 2 Pro da OpenAI. Física revolucionária.',
+    price: '$1.20/5s',
+    apiPath: 'openai/sora-2-pro/text-to-video',
     exclusive: true,
-    icon: '🎬',
+    icon: 'S',
   },
   {
-    id: 'hailuo-02',
-    name: 'Hailuo 02',
+    id: 'minimax/hailuo-02/fast',
+    name: 'Hailuo 02 Fast',
     type: 'video',
-    description: 'MiniMax Hailuo para vídeos com movimento natural e cinematográfico.',
-    price: '$0.23/6s',
-    endpoint: '/minimax/hailuo-02/t2v-standard',
-    exclusive: false,
-    icon: '🌊',
+    description: 'Velocidade impressionante com o Minimax Hailuo 02.',
+    price: '$0.10/6s',
+    apiPath: 'minimax/hailuo-02/fast',
+    icon: 'H',
   },
   {
-    id: 'kling-v2.1',
-    name: 'Kling v2.1',
+    id: 'vidu/image-to-video-q2-pro',
+    name: 'Vidu Q2 Pro I2V',
     type: 'video',
-    description: 'Geração de vídeo de alta fidelidade com movimentos realistas.',
-    price: '$0.25/5s',
-    endpoint: '/kling/kling-v2-1/txt2video',
-    exclusive: false,
-    icon: '🎥',
-  },
-  {
-    id: 'wan-2.5',
-    name: 'WAN 2.5',
-    type: 'video',
-    description: 'Modelo exclusivo com excelente compreensão de cena e consistência temporal.',
-    price: '$0.25/5s',
-    endpoint: '/wan/wan-2.5/t2v',
-    exclusive: true,
-    icon: '🎞️',
-  },
-  {
-    id: 'veo3-fast',
-    name: 'Veo 3 Fast (Google)',
-    type: 'video',
-    description: 'Modelo Google de última geração para vídeos cinematográficos de alta resolução.',
-    price: '$1.20/8s',
-    endpoint: '/google/veo3-fast/txt2video',
-    exclusive: false,
-    icon: '🔮',
-  },
+    description: 'Vidu Q2 Pro Image-to-Video.',
+    price: '$0.30/5s',
+    apiPath: 'vidu/image-to-video-q2-pro',
+    icon: 'V',
+  }
 ];
 
 // =============================================
@@ -194,14 +257,14 @@ export class WaveSpeedService {
   }
 
   /**
-   * Retorna o endpoint completo (via proxy) para um dado modelo
+   * Retorna o apiPath unificado para um dado modelo
    */
-  private static getEndpointForModel(modelId: WaveSpeedModel): string {
+  private static getApiPathForModel(modelId: WaveSpeedModel): string {
     const model = WAVESPEED_MODELS.find((m) => m.id === modelId);
     if (!model) {
       throw new Error(`Modelo WaveSpeed "${modelId}" não encontrado no catálogo.`);
     }
-    return `${this.PROXY_BASE}${model.endpoint}`;
+    return model.apiPath;
   }
 
   /**
@@ -225,22 +288,34 @@ export class WaveSpeedService {
     }
 
     const data = await response.json();
+    const resultData = data.data || data;
 
     // A API retorna um ID de task — precisamos fazer polling para obter o resultado
-    if (data.id) {
-      return this.pollForResult(data.id);
+    if (resultData.id) {
+      if (resultData.status === 'completed' && resultData.outputs && resultData.outputs.length > 0) {
+        return {
+          success: true,
+          data: {
+            id: resultData.id,
+            output: resultData.outputs[0],
+            status: 'completed',
+            createdAt: resultData.created_at || new Date().toISOString(),
+          },
+        };
+      }
+      return this.pollForResult(resultData.id);
     }
 
     // Se os dados já contêm output diretamente
-    if (data.data?.output || data.output) {
+    if (resultData.output) {
       return {
         success: true,
         data: {
-          id: data.id || data.data?.id || 'direct',
-          output: data.data?.output || data.output,
+          id: resultData.id || 'direct',
+          output: resultData.output,
           status: 'completed',
-          credits_used: data.credits_used || data.data?.credits_used,
-          createdAt: data.createdAt || new Date().toISOString(),
+          credits_used: resultData.credits_used,
+          createdAt: resultData.created_at || new Date().toISOString(),
         },
       };
     }
@@ -280,24 +355,29 @@ export class WaveSpeedService {
         }
 
         const data = await response.json();
+        const resultData = data.data || data;
 
         // Verifica se o resultado está disponível
-        if (data.status === 'completed' || data.output || data.data?.output) {
+        if (resultData.status === 'completed') {
+          const finalOutput = (resultData.outputs && resultData.outputs.length > 0)
+            ? resultData.outputs[0]
+            : (resultData.output || '');
+
           return {
             success: true,
             data: {
               id: taskId,
-              output: data.output || data.data?.output || '',
+              output: finalOutput,
               status: 'completed',
-              credits_used: data.credits_used,
-              createdAt: data.createdAt || new Date().toISOString(),
+              credits_used: resultData.credits_used,
+              createdAt: resultData.created_at || new Date().toISOString(),
             },
           };
         }
 
         // Se a task falhou
-        if (data.status === 'failed' || data.status === 'error') {
-          return { success: false, error: data.error || 'Geração falhou no servidor.' };
+        if (resultData.status === 'failed' || resultData.status === 'error') {
+          return { success: false, error: resultData.error || data.error || 'Geração falhou no servidor.' };
         }
 
       } catch (err) {
@@ -313,12 +393,12 @@ export class WaveSpeedService {
   // =============================================
 
   /**
-   * Gera uma imagem a partir de um prompt textual.
+   * Gera uma imagem a partir de um prompt textual usando o endpoint consolidado V3.
    */
   static async generateImage(params: ImageGenerationParams): Promise<WaveSpeedResponse> {
     this.validateConfig();
 
-    const endpoint = this.getEndpointForModel(params.model);
+    const apiPath = this.getApiPathForModel(params.model);
 
     const body: Record<string, unknown> = {
       prompt: params.prompt,
@@ -326,21 +406,36 @@ export class WaveSpeedService {
       num_inference_steps: params.num_inference_steps || 28,
     };
 
+    if (params.image) {
+      if (apiPath.endsWith('/edit')) {
+        // Modelos da família Nano Banana e Gemini Edit pedem um array "images"
+        body.images = [params.image];
+      } else {
+        // Modelos como Flux ou Minimax I2I pedem string "image" + config de força
+        body.image = params.image;
+        body.strength = 0.70; // Preserva a estrutura mas permite variação
+      }
+    }
+
     if (params.seed !== undefined) {
       body.seed = params.seed;
     }
 
-    console.log(`[WaveSpeed] Gerando imagem com modelo "${params.model}"...`);
+    // O proxy vite mapeia "/api/wavespeed" para "https://api.wavespeed.ai/api/v3"
+    // Então adicionamos o apiPath (ex: "google/google-nano-banana-2-text-to-image") diretamente na URL.
+    const endpoint = `${this.PROXY_BASE}/${apiPath}`;
+
+    console.log(`[WaveSpeed] Gerando imagem com modelo "${params.model}" no endpoint ${endpoint}...`);
     return this.request(endpoint, body);
   }
 
   /**
-   * Gera um vídeo a partir de um prompt textual (e opcionalmente, uma imagem de referência).
+   * Gera um vídeo a partir de um prompt textual (e opcionalmente, uma imagem de referência) via endpoint V3.
    */
   static async generateVideo(params: VideoGenerationParams): Promise<WaveSpeedResponse> {
     this.validateConfig();
 
-    const endpoint = this.getEndpointForModel(params.model);
+    const apiPath = this.getApiPathForModel(params.model);
 
     const body: Record<string, unknown> = {
       prompt: params.prompt,
@@ -356,7 +451,11 @@ export class WaveSpeedService {
       body.resolution = params.resolution;
     }
 
-    console.log(`[WaveSpeed] Gerando vídeo com modelo "${params.model}"...`);
+    // O proxy vite mapeia "/api/wavespeed" para "https://api.wavespeed.ai/api/v3"
+    // Então adicionamos o apiPath (ex: "google/google-veo3.1-image-to-video") diretamente na URL.
+    const endpoint = `${this.PROXY_BASE}/${apiPath}`;
+
+    console.log(`[WaveSpeed] Gerando vídeo com modelo "${params.model}" no endpoint ${endpoint}...`);
     return this.request(endpoint, body);
   }
 
@@ -367,7 +466,7 @@ export class WaveSpeedService {
     this.validateConfig();
 
     try {
-      const response = await fetch(`${this.PROXY_BASE}/account/balance`, {
+      const response = await fetch(`${this.PROXY_BASE}/balance`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${this.apiKey}`,
@@ -380,9 +479,11 @@ export class WaveSpeedService {
       }
 
       const data = await response.json();
+      const resultData = data.data || data;
+
       return {
-        balance: data.balance ?? data.credits ?? 0,
-        currency: data.currency || 'USD',
+        balance: resultData.balance ?? resultData.credits ?? 0,
+        currency: resultData.currency || 'USD',
       };
     } catch (err) {
       console.error('[WaveSpeed] Falha ao buscar saldo:', err);
