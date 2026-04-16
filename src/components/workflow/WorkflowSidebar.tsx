@@ -19,24 +19,18 @@ const SIDEBAR_TABS = [
 
 const NODE_CATALOG = [
   {
-    category: 'Core',
+    category: 'Principal',
     nodes: [
       { type: 'prompt', name: 'Prompt', icon: Type, color: 'text-blue-400', bg: 'bg-blue-500/10' },
-      { type: 'referenceImage', name: 'Image Input', icon: ImageIcon, color: 'text-orange-400', bg: 'bg-orange-500/10' },
-      { type: 'generator', name: 'Generator', icon: Sparkles, color: 'text-violet-400', bg: 'bg-violet-500/10' },
+      { type: 'referenceImage', name: 'Entrada de Imagem', icon: ImageIcon, color: 'text-orange-400', bg: 'bg-orange-500/10' },
+      { type: 'generator', name: 'Gerador', icon: Sparkles, color: 'text-violet-400', bg: 'bg-violet-500/10' },
     ],
   },
   {
-    category: 'Enhancement',
+    category: 'Aprimoramento',
     nodes: [
-      { type: 'upscale', name: 'Upscale', icon: ArrowUpRight, color: 'text-amber-400', bg: 'bg-amber-500/10' },
-      { type: 'backgroundRemover', name: 'BG Remove', icon: Eraser, color: 'text-rose-400', bg: 'bg-rose-500/10' },
-    ],
-  },
-  {
-    category: 'Output',
-    nodes: [
-      { type: 'imageOutput', name: 'Image Output', icon: ImageIcon, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+      { type: 'upscale', name: 'Melhorar Res.', icon: ArrowUpRight, color: 'text-amber-400', bg: 'bg-amber-500/10' },
+      { type: 'backgroundRemover', name: 'Remover Fundo', icon: Eraser, color: 'text-rose-400', bg: 'bg-rose-500/10' },
     ],
   },
 ];

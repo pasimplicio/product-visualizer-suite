@@ -1,12 +1,15 @@
 import React from 'react';
 import { WorkflowCanvas } from '@/components/workflow/WorkflowCanvas';
-import { Sparkles, Share2, ChevronDown, LogOut, Coins, Sun, Moon } from 'lucide-react';
+import { Sparkles, Share2, ChevronDown, LogOut, Coins, Sun, Moon, Library } from 'lucide-react';
 import { Toaster } from '@/components/ui/sonner';
 import { useAuth } from '@/context/auth-context';
+import { useLibrary } from '@/context/library-context';
+import { LibraryModal } from '@/components/library/LibraryModal';
 import { useTheme } from 'next-themes';
 
 const Index = () => {
   const { user, profile, signOut } = useAuth();
+  const { openLibrary } = useLibrary();
   const { theme, setTheme } = useTheme();
   const [showMenu, setShowMenu] = React.useState(false);
 
@@ -83,6 +86,13 @@ const Index = () => {
                 </div>
                 <div className="border-t border-border mt-1 pt-1">
                   <button
+                    onClick={() => { setShowMenu(false); openLibrary(); }}
+                    className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[11px] font-bold text-violet-400 hover:text-violet-300 hover:bg-violet-500/10 transition-all mb-1"
+                  >
+                    <Library className="w-3.5 h-3.5" />
+                    Minha Biblioteca
+                  </button>
+                  <button
                     onClick={() => { setShowMenu(false); signOut(); }}
                     className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[11px] text-destructive hover:bg-destructive/10 transition-all"
                   >
@@ -101,6 +111,7 @@ const Index = () => {
         <WorkflowCanvas />
       </main>
 
+      <LibraryModal />
       <Toaster />
     </div>
   );

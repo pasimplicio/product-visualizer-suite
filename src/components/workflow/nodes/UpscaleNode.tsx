@@ -1,36 +1,91 @@
-import React from 'react';
+import React, { useCallback, useRef } from 'react';
 import { Handle, Position, NodeProps } from '@xyflow/react';
-import { ArrowUpRight, Loader2, GripVertical, CheckCircle2, Trash2 } from 'lucide-react';
+import { ArrowUpRight, Loader2, GripVertical, CheckCircle2, Trash2, Upload, X } from 'lucide-react';
 import { WorkflowNodeData } from '@/lib/workflow/types';
 import { GeminiService } from '@/lib/services/gemini-service';
+import { useLibrary } from '@/context/library-context';
 import { toast } from 'sonner';
 
 export const UpscaleNode = ({ data, id, selected }: NodeProps<WorkflowNodeData>) => {
+  const { addLibraryItem } = useLibrary();
   const isGenerating = data.status === 'generating';
   const isCompleted = data.status === 'completed';
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const updateNodeState = useCallback((updates: Partial<WorkflowNodeData>) => {
+    window.dispatchEvent(
+      new CustomEvent('workflow-node-update', {
+        detail: { id, updates },
+      })
+    );
+    if (data.onUpdate) {
+      data.onUpdate(id, updates);
+    }
+  }, [id, data.onUpdate]);
+
+  const onImageUpload = useCallback((image: string) => {
+    updateNodeState({ image });
+  }, [updateNodeState]);
+
+  const onClear = useCallback(() => {
+    updateNodeState({ image: null, resultImage: undefined, status: 'idle', progress: 0 });
+  }, [updateNodeState]);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        setTimeout(() => toast.error('Formato inválido. Selecione uma imagem.'), 0);
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        onImageUpload(reader.result as string);
+        if (fileInputRef.current) fileInputRef.current.value = '';
+      };
+      reader.onerror = () => setTimeout(() => toast.error('Erro ao ler imagem.'), 0);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        setTimeout(() => toast.error('Formato inválido. Solte uma imagem.'), 0);
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => onImageUpload(reader.result as string);
+      reader.onerror = () => setTimeout(() => toast.error('Erro ao ler imagem.'), 0);
+      reader.readAsDataURL(file);
+    }
+  }, [onImageUpload]);
 
   const handleRun = async () => {
-    if (!data.image || !data.onUpdate) return;
+    if (!data.image) return;
 
-    data.onUpdate(id, { status: 'generating', progress: 10 });
+    updateNodeState({ status: 'generating', progress: 10 });
 
     try {
-      data.onUpdate(id, { progress: 30 });
+      updateNodeState({ progress: 30 });
 
       const result = await GeminiService.upscaleImage(data.image);
 
       if (result.success && result.data?.imageUrl) {
-        data.onUpdate(id, {
+        updateNodeState({
           status: 'completed',
           resultImage: result.data.imageUrl,
           progress: 100,
         });
+        addLibraryItem(result.data.imageUrl, 'upscale');
         toast.success('Upscale concluído!');
       } else {
         throw new Error(result.error || 'Falha no upscale');
       }
     } catch (err: any) {
-      data.onUpdate(id, { status: 'error' });
+      updateNodeState({ status: 'error' });
       toast.error('Falha no upscale', { description: err.message });
     }
   };
@@ -51,12 +106,12 @@ export const UpscaleNode = ({ data, id, selected }: NodeProps<WorkflowNodeData>)
       />
 
       <div className="flex items-center gap-2 px-3 py-2 border-b border-white/5 rounded-t-xl bg-amber-500/[0.04]">
-        <GripVertical className="w-3 h-3 text-muted-foreground/20" />
+        <GripVertical className="w-3 h-3 text-muted-foreground/20 cursor-grab" />
         <div className="flex items-center gap-1.5">
           <div className="w-5 h-5 rounded-md bg-amber-500/20 flex items-center justify-center">
             <ArrowUpRight className="w-3 h-3 text-amber-400" />
           </div>
-          <span className="text-[10px] font-bold text-foreground/70 uppercase tracking-wider">Upscale</span>
+          <span className="text-[10px] font-bold text-foreground/70 uppercase tracking-wider">{data.label || 'Melhorar Res.'}</span>
         </div>
         <button
           onClick={(e) => { e.stopPropagation(); data.onDelete?.(id); }}
@@ -71,20 +126,42 @@ export const UpscaleNode = ({ data, id, selected }: NodeProps<WorkflowNodeData>)
       </div>
 
       <div className="p-2">
-        <div className="w-full aspect-square rounded-lg overflow-hidden bg-muted/30 border border-border flex items-center justify-center">
-          {data.resultImage ? (
-            <img src={data.resultImage} alt="Upscaled" className="w-full h-full object-cover" />
-          ) : data.image ? (
-            <img src={data.image} alt="Input" className="w-full h-full object-cover opacity-40 grayscale" />
-          ) : (
-            <ArrowUpRight className="w-8 h-8 text-muted-foreground/10" />
-          )}
-          {isGenerating && (
-            <div className="absolute inset-0 bg-background/60 flex items-center justify-center">
-              <Loader2 className="w-6 h-6 animate-spin text-amber-400" />
-            </div>
-          )}
-        </div>
+        {!data.image && !data.resultImage ? (
+          <div
+            className="w-full aspect-square rounded-lg border-2 border-dashed border-amber-500/30 bg-background/50 flex flex-col items-center justify-center cursor-pointer hover:border-amber-500/60 hover:bg-amber-500/[0.03] transition-all relative overflow-hidden"
+            onClick={() => fileInputRef.current?.click()}
+            onDrop={handleDrop}
+            onDragOver={(e) => e.preventDefault()}
+          >
+            <Upload className="w-5 h-5 text-amber-500/40 mb-1" />
+            <span className="text-[9px] text-muted-foreground/60 font-medium">Soltar imagem</span>
+            <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
+          </div>
+        ) : (
+          <div className="w-full aspect-square rounded-lg overflow-hidden flex items-center justify-center relative group">
+            {data.resultImage ? (
+              <img src={data.resultImage} alt="Upscaled" className="w-full h-full object-contain" />
+            ) : (
+              <img src={data.image} alt="Input" className="w-full h-full object-contain opacity-40 grayscale" />
+            )}
+            
+            {!isGenerating && (
+              <button
+                className="absolute top-1 right-1 w-5 h-5 rounded-md bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-amber-500/80 z-10"
+                onClick={(e) => { e.stopPropagation(); onClear(); }}
+                title="Limpar nó"
+              >
+                <X className="w-3 h-3 text-white" />
+              </button>
+            )}
+
+            {isGenerating && (
+              <div className="absolute inset-0 bg-background/60 flex items-center justify-center rounded-lg z-10">
+                <Loader2 className="w-6 h-6 animate-spin text-amber-400" />
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="px-2 pb-2">

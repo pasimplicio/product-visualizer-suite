@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   MousePointer2, Type, ImageIcon, Video, Mic, Download,
-  LayoutGrid, Share2, Undo2, Redo2,
+  LayoutGrid, Share2, Undo2, Redo2, Sparkles, ArrowUpRight, Eraser
 } from 'lucide-react';
 
 interface CanvasToolbarProps {
@@ -10,10 +10,13 @@ interface CanvasToolbarProps {
 }
 
 export const CanvasToolbar: React.FC<CanvasToolbarProps> = ({ onAddNode, zoom }) => {
-  const tools = [
-    { icon: Type, label: 'Add Prompt', action: () => onAddNode('prompt') },
-    { icon: ImageIcon, label: 'Add Image', action: () => onAddNode('referenceImage') },
-    { icon: Video, label: 'Add Generator', action: () => onAddNode('generator') },
+  const tools: any[] = [
+    { icon: Type, label: 'Prompt', action: () => onAddNode('prompt') },
+    { icon: ImageIcon, label: 'Entrada de Imagem', action: () => onAddNode('referenceImage') },
+    { icon: Sparkles, label: 'Gerador', action: () => onAddNode('generator') },
+    { separator: true },
+    { icon: ArrowUpRight, label: 'Melhorar Res.', action: () => onAddNode('upscale') },
+    { icon: Eraser, label: 'Remover Fundo', action: () => onAddNode('backgroundRemover') },
   ];
 
   return (

@@ -406,7 +406,7 @@ export class GeminiService {
    */
   static async removeBackground(imageDataUrl: string): Promise<GeminiImageResponse> {
     return this.generateImage({
-      prompt: 'Remove the background from this image completely. Make the background transparent. Keep only the main subject with clean edges.',
+      prompt: 'Remove the background from this image completely. Make the background transparent. Keep only the main subject with clean edges. Ensure absolute strict alpha transparency with zero white halos, soft glow, or fringes around the edges.',
       modelId: 'nano-banana-2',
       referenceImage: imageDataUrl,
     });

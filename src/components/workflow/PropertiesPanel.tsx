@@ -2,6 +2,7 @@ import React from 'react';
 import { WorkflowNodeData } from '@/lib/workflow/types';
 import { GEMINI_MODELS, getGeminiModelsByType } from '@/lib/services/gemini-models';
 import { CREDIT_COSTS } from '@/context/auth-context';
+import { useLibrary } from '@/context/library-context';
 import {
   Settings2, Play, ChevronDown, Minus, Plus, Globe,
   Sparkles, ImageIcon, Video, Type, Eraser, ArrowUpRight,
@@ -16,16 +17,52 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
   selectedNode,
   onUpdateNode,
 }) => {
+  const { items, openLibrary } = useLibrary();
+
   if (!selectedNode) {
     return (
       <aside className="w-[280px] bg-popover border-l border-border flex-shrink-0 hidden lg:flex flex-col">
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center px-6">
-            <Settings2 className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
-            <p className="text-xs text-muted-foreground font-medium">
-              Selecione um nó para ver suas propriedades
-            </p>
-          </div>
+        <div className="px-4 py-3 border-b border-border flex items-center justify-between">
+          <h3 className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-violet-400" />
+            Recentes
+          </h3>
+          <button onClick={openLibrary} className="text-[10px] font-bold text-violet-400 hover:text-violet-300 transition-colors">
+            Ver tudo
+          </button>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-4">
+          {items.length === 0 ? (
+            <div className="h-full flex flex-col items-center justify-center text-center opacity-50">
+              <Settings2 className="w-10 h-10 text-muted-foreground mb-3" />
+              <p className="text-xs text-muted-foreground font-medium">
+                Selecione um nó ou gere algo novo.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-3">
+              {items.slice(0, 8).map((item) => (
+                <div 
+                  key={item.id} 
+                  className="group relative aspect-square rounded-lg border border-border bg-card overflow-hidden cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all"
+                  onClick={openLibrary}
+                >
+                  <div className={`w-full h-full ${
+                    item.type === 'background-remover' 
+                      ? 'bg-[url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjMmEyYTNjIj48L3JlY3Q+CjxyZWN0IHggPSI0IiB5PSI0IiB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjMmEyYTNjIj48L3JlY3Q+Cjwvc3ZnPg==")] dark:bg-[url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjMjIyIj48L3JlY3Q+CjxyZWN0IHg9IjQiIHk9IjQiIHdpZHRoPSI0IiBoZWlnaHQ9IjQiIGZpbGw9IiMyMjIiPjwvcmVjdD4KPC9zdmc+")]'
+                      : 'bg-muted/30'
+                  }`}>
+                    {item.type === 'video' ? (
+                      <video src={item.previewUrl} className="w-full h-full object-cover" muted playsInline />
+                    ) : (
+                      <img src={item.previewUrl} alt="" className="w-full h-full object-cover" />
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </aside>
     );

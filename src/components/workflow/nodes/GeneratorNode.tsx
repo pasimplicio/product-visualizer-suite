@@ -7,11 +7,13 @@ import {
 import { WorkflowNodeData } from '@/lib/workflow/types';
 import { GEMINI_MODELS, getGeminiModel } from '@/lib/services/gemini-models';
 import { useAuth, CREDIT_COSTS, CreditOperation } from '@/context/auth-context';
+import { useLibrary } from '@/context/library-context';
 import { GeminiService } from '@/lib/services/gemini-service';
 import { toast } from 'sonner';
 
 export const GeneratorNode = ({ data, id, selected }: NodeProps<WorkflowNodeData>) => {
   const { consumeCredits, canAfford } = useAuth();
+  const { addLibraryItem } = useLibrary();
   const isGenerating = data.status === 'generating';
   const isCompleted = data.status === 'completed';
   const modelInfo = getGeminiModel(data.modelId as string) || GEMINI_MODELS[0];
@@ -93,6 +95,7 @@ export const GeneratorNode = ({ data, id, selected }: NodeProps<WorkflowNodeData
               resultVideo: videoResult.data.videoUrl,
               progress: 100,
             });
+            addLibraryItem(videoResult.data.videoUrl, 'video', data.prompt);
             toast.success('Vídeo gerado com sucesso!');
           } else {
             throw new Error(videoResult.error || 'Falha na geração de vídeo');
@@ -117,6 +120,7 @@ export const GeneratorNode = ({ data, id, selected }: NodeProps<WorkflowNodeData
             resultImage: result.data.imageUrl,
             progress: 100,
           });
+          addLibraryItem(result.data.imageUrl, 'image', data.prompt);
           toast.success('Imagem gerada com sucesso!');
         } else {
           throw new Error(result.error || 'Falha na geração de imagem');
