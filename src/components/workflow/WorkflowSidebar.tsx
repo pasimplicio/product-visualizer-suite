@@ -126,21 +126,21 @@ export const WorkflowSidebar: React.FC<WorkflowSidebarProps> = ({ onAddNode }) =
                   </div>
                 </div>
 
-                <div className="p-3 rounded-xl bg-accent/30 border border-border/50">
-                  <p className="text-[10px] font-semibold text-foreground mb-1">Cota Free Tier (Padrão)</p>
+                <div className="p-3 rounded-xl bg-violet-500/10 border border-violet-500/20">
+                  <p className="text-[10px] font-bold text-violet-400 mb-1 tracking-tight">Plano Profissional (Pay-as-you-go)</p>
                   <p className="text-[9px] text-muted-foreground leading-relaxed">
-                    Você está usando os limites gratuitos do Google AI Studio aplicados à sua chave de API.
+                    Você ativou o faturamento. O sistema agora utiliza os modelos Gemini 2.5 e 3.1 com velocidade e qualidade prioritárias.
                   </p>
                 </div>
 
                 <div className="grid grid-cols-1 gap-2">
                   <div className="p-2.5 rounded-lg bg-background/50 border border-border/50 flex items-center justify-between">
-                    <span className="text-[9px] text-muted-foreground">RPM (Por Minuto)</span>
-                    <span className="text-[10px] font-mono font-bold text-blue-400">15 req</span>
+                    <span className="text-[9px] text-muted-foreground uppercase tracking-tighter">Status do Faturamento</span>
+                    <span className="text-[10px] font-mono font-bold text-emerald-400">ATIVO</span>
                   </div>
                   <div className="p-2.5 rounded-lg bg-background/50 border border-border/50 flex items-center justify-between">
-                    <span className="text-[9px] text-muted-foreground">RPD (Por Dia)</span>
-                    <span className="text-[10px] font-mono font-bold text-blue-400">1.500 req</span>
+                    <span className="text-[9px] text-muted-foreground uppercase tracking-tighter">Velocidade de Geração</span>
+                    <span className="text-[10px] font-mono font-bold text-violet-400">MÁXIMA</span>
                   </div>
                   <div className="p-2.5 rounded-lg bg-background/50 border border-border/50 flex items-center justify-between">
                     <span className="text-[9px] text-muted-foreground">Tokens por Minuto</span>
