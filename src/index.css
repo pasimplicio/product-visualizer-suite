@@ -10,7 +10,7 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 0 0% 98%;
+    --background: 240 20% 98%;
     --foreground: 240 10% 4%;
     --card: 0 0% 100%;
     --card-foreground: 240 10% 4%;
@@ -18,39 +18,39 @@ All colors MUST be HSL.
     --popover-foreground: 240 10% 4%;
     --primary: 263.4 70% 50.4%;
     --primary-foreground: 210 40% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
+    --secondary: 240 5% 96%;
+    --secondary-foreground: 240 6% 10%;
+    --muted: 240 5% 94%;
+    --muted-foreground: 240 4% 46%;
+    --accent: 240 5% 96%;
+    --accent-foreground: 240 6% 10%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
+    --border: 240 6% 90%;
+    --input: 240 6% 90%;
     --ring: 263.4 70% 50.4%;
     --radius: 0.75rem;
   }
 
   .dark {
-    --background: 240 10% 4%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 4%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 4%;
-    --popover-foreground: 0 0% 98%;
+    --background: 240 28.6% 5.5%; /* #0a0a12 */
+    --foreground: 240 10% 98%;
+    --card: 240 16.1% 12.2%;    /* #1a1a24 (Nodes) */
+    --card-foreground: 240 10% 98%;
+    --popover: 240 25% 8.6%;     /* #12121a (Sidebar Panel) */
+    --popover-foreground: 240 10% 98%;
     --primary: 263.4 70% 50.4%;
     --primary-foreground: 210 40% 98%;
-    --secondary: 240 3.7% 15.9%;
+    --secondary: 240 32% 7%;     /* #0e0e16 */
     --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
+    --muted: 240 32% 7%;         /* #0e0e16 (Header/Icon-bar) */
+    --muted-foreground: 240 5% 65%;
+    --accent: 240 20% 15%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
+    --border: 0 0% 100% / 0.08; /* Subtle borders like white/[0.08] */
+    --input: 0 0% 100% / 0.08;
     --ring: 263.4 70% 50.4%;
   }
 
@@ -107,10 +107,12 @@ All colors MUST be HSL.
 }
 
 .react-flow__controls {
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
-  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
+  border-radius: 10px;
   overflow: hidden;
-  background-color: hsl(var(--card)) !important;
+  background-color: hsl(var(--card) / 0.8) !important;
+  backdrop-filter: blur(10px);
+  border: 1px solid hsl(var(--border)) !important;
 }
 
 .react-flow__controls-button {

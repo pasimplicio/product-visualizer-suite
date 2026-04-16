@@ -9,16 +9,11 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
     proxy: {
-      '/api/stability': {
-        target: 'https://api.stability.ai',
+      '/api/gemini': {
+        target: 'https://generativelanguage.googleapis.com',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/stability/, ''),
-      },
-      '/api/wavespeed': {
-        target: 'https://api.wavespeed.ai',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/wavespeed/, '/api/v3'),
-        secure: false, // Bypass para certificado do proxy/firewall corporativo
+        rewrite: (path) => path.replace(/^\/api\/gemini/, ''),
+        secure: true,
       },
     },
     hmr: {
