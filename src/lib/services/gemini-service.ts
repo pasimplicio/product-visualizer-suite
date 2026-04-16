@@ -62,12 +62,15 @@ export interface GeminiVideoConfig {
 export class GeminiService {
   private static apiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
 
-  /**
-   * Proxy local do Vite para evitar CORS e não expor a key.
-   * As requisições /api/gemini são reescritas para
-   * https://generativelanguage.googleapis.com
+  /** 
+   * Retorna a URL base correta da API.
+   * Local: /api/gemini (Proxy do Vite evita CORS)
+   * Deploy: URL Direta (Hospedagens estáticas não tem proxy de servidor)
    */
-  private static readonly PROXY_BASE = '/api/gemini';
+  private static getBaseUrl(): string {
+    const isDev = import.meta.env.DEV;
+    return isDev ? '/api/gemini' : 'https://generativelanguage.googleapis.com';
+  }
 
   /** Valida configuração da API */
   private static validateConfig(): void {
@@ -123,15 +126,22 @@ export class GeminiService {
     // Adicionar o prompt de texto
     parts.push({ text: config.prompt });
 
-    const requestBody = {
+    const requestBody: any = {
       contents: [{ parts }],
       generationConfig: {
         responseModalities: ['TEXT', 'IMAGE'],
       },
     };
 
+    if (config.aspectRatio) {
+      // O Gemini Imagen 3 exige que a proporção esteja dentro de imageConfig
+      requestBody.generationConfig.imageConfig = {
+        aspectRatio: config.aspectRatio
+      };
+    }
+
     try {
-      const url = `${this.PROXY_BASE}/v1beta/models/${model.apiModel}:generateContent`;
+      const url = `${this.getBaseUrl()}/v1beta/models/${model.apiModel}:generateContent`;
       
       console.log(`[Gemini] Gerando imagem com "${model.name}" (${model.apiModel})...`);
 
@@ -246,7 +256,7 @@ export class GeminiService {
     }
 
     try {
-      const url = `${this.PROXY_BASE}/v1beta/models/${model.apiModel}:predictLongRunning`;
+      const url = `${this.getBaseUrl()}/v1beta/models/${model.apiModel}:predictLongRunning`;
 
       console.log(`[Gemini] Iniciando vídeo com "${model.name}" (${model.apiModel})...`);
 
@@ -294,7 +304,7 @@ export class GeminiService {
     this.validateConfig();
 
     try {
-      const url = `${this.PROXY_BASE}/v1beta/${operationName}`;
+      const url = `${this.getBaseUrl()}/v1beta/${operationName}`;
 
       const response = await fetch(url, {
         method: 'GET',

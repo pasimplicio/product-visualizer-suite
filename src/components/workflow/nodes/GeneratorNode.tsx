@@ -256,9 +256,9 @@ export const GeneratorNode = ({ data, id, selected }: NodeProps<WorkflowNodeData
       <div className="p-3">
         <div className="relative w-full aspect-[4/3] rounded-lg overflow-hidden bg-background/50 border border-input flex items-center justify-center group/preview">
           {data.resultVideo && isVideo ? (
-            <video id={`preview-${id}`} src={data.resultVideo} controls playsInline className="w-full h-full object-cover" />
+            <video id={`preview-${id}`} src={data.resultVideo} controls playsInline className="w-full h-full object-contain" />
           ) : data.resultImage && !isVideo ? (
-            <img id={`preview-${id}`} src={data.resultImage} alt="Resultado" className="w-full h-full object-cover" />
+            <img id={`preview-${id}`} src={data.resultImage} alt="Resultado" className="w-full h-full object-contain" />
           ) : data.image ? (
             <div className="relative w-full h-full">
               <img src={data.image} alt="Referência" className="w-full h-full object-contain opacity-40 grayscale" />

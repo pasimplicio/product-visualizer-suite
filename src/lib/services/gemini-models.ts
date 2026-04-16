@@ -56,10 +56,10 @@ export const GEMINI_MODELS: GeminiModelInfo[] = [
   // ─── MODELOS DE IMAGEM (Nano Banana) ───
   {
     id: 'nano-banana-2',
-    apiModel: 'imagen-4.0-generate-001',
+    apiModel: 'gemini-3.1-flash-image-preview',
     name: 'Nano Banana 2',
     type: 'image',
-    description: 'Alta eficiência e velocidade. Ideal para volume.',
+    description: 'Nova geração. Alta qualidade e velocidade.',
     icon: '🍌',
     tier: 'standard',
     creditCost: 0,
@@ -68,10 +68,10 @@ export const GEMINI_MODELS: GeminiModelInfo[] = [
   },
   {
     id: 'nano-banana-pro',
-    apiModel: 'imagen-4.0-ultra-generate-001',
+    apiModel: 'gemini-3.1-flash-image-preview',
     name: 'Nano Banana Pro',
     type: 'image',
-    description: 'Profissional com Thinking. Texto e detalhes ultra-precisos.',
+    description: 'Profissional. Detalhes ultra-precisos e realismo.',
     icon: '🍌',
     tier: 'premium',
     creditCost: 5,
