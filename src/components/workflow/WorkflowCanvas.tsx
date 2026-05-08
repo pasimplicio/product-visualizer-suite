@@ -224,7 +224,7 @@ const WorkflowCanvasInner = ({ workflowName, onWorkflowNameChange }: WorkflowCan
     const defaults: Record<string, Partial<WorkflowNodeData>> = {
       referenceImage: { image: null },
       prompt:         { prompt: '' },
-      imageOutput:    { modelId: 'nano-banana-2', aspectRatio: '1:1' },
+      imageOutput:    { modelId: 'nano-banana-legacy', aspectRatio: '1:1' },
       videoOutput:    { modelId: 'veo-3.1-lite', aspectRatio: '16:9', resolution: '720p' },
     };
     const newNode: WorkflowNode = {

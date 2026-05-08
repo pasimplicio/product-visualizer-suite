@@ -102,7 +102,7 @@ async function executeNodeOperation(
       onProgress(20);
       const result = await GeminiService.generateImage({
         prompt: (data.prompt as string) || 'Professional product photo, studio lighting',
-        modelId: (data.modelId as string) || 'nano-banana-2',
+        modelId: (data.modelId as string) || 'nano-banana-legacy',
         referenceImage: (data.image as string) || undefined,
         aspectRatio: (data.aspectRatio as string) || '1:1',
       });

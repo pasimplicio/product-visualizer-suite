@@ -80,14 +80,14 @@ export const GEMINI_MODELS: GeminiModelInfo[] = [
   },
   {
     id: 'nano-banana-legacy',
-    apiModel: 'gemini-2.5-flash-image',
-    name: 'Nano Banana',
+    apiModel: 'gemini-2.0-flash-preview-image-generation',
+    name: 'Flash (Gratuito)',
     type: 'image',
-    description: 'Modelo original. Rápido e eficiente.',
-    icon: '🍌',
+    description: 'Gratuito. Até 1500 imagens/dia. Ideal para uso diário.',
+    icon: '🆓',
     tier: 'free',
     creditCost: 0,
-    supportedAspectRatios: ['1:1', '2:3', '3:2', '3:4', '4:3', '9:16', '16:9'],
+    supportedAspectRatios: ['1:1', '3:4', '4:3', '9:16', '16:9'],
   },
 
   // ─── MODELOS DE VÍDEO (Veo 3.1) ───
