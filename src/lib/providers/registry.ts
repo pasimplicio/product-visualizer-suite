@@ -1,13 +1,11 @@
 import type { AIProvider } from './types';
 import { GeminiProvider } from './gemini-provider';
-import { WaveSpeedProvider } from './wavespeed-provider';
 
 class ProviderRegistry {
   private providers = new Map<string, AIProvider>();
 
   constructor() {
     this.register(new GeminiProvider());
-    this.register(new WaveSpeedProvider());
   }
 
   register(provider: AIProvider): void {

@@ -1,82 +1,37 @@
 import React, { useState } from 'react';
 import {
   LayoutGrid, Boxes, Search, FolderOpen, Wand2,
-  Type, ImageIcon, Sparkles, ArrowUpRight, Eraser, Video,
-  Clapperboard, Code2, StickyNote, Layers, LayoutGrid as Gallery,
-  Play, GitBranch, RefreshCw, Globe, Timer,
+  Type, ImageIcon, Sparkles, Video, Play,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { WORKFLOW_TEMPLATES } from '@/lib/workflow/templates';
 
 interface WorkflowSidebarProps {
   onAddNode: (type: string) => void;
+  onExport?: () => void;
 }
 
 const SIDEBAR_TABS = [
   { id: 'content', icon: LayoutGrid, label: 'Content' },
-  { id: 'nodes', icon: Boxes, label: 'Nodes' },
-  { id: 'search', icon: Search, label: 'Search' },
-  { id: 'assets', icon: FolderOpen, label: 'Assets' },
-  { id: 'builder', icon: Wand2, label: 'Builder' },
+  { id: 'nodes',   icon: Boxes,      label: 'Nodes'   },
+  { id: 'search',  icon: Search,     label: 'Search'  },
+  { id: 'assets',  icon: FolderOpen, label: 'Assets'  },
+  { id: 'builder', icon: Wand2,      label: 'Builder' },
 ];
 
 const NODE_CATALOG = [
   {
-    category: 'Controle',
-    nodes: [
-      { type: 'promptBuilder', name: 'Prompt Builder',  icon: Code2,       color: 'text-blue-400',    bg: 'bg-blue-500/10'    },
-      { type: 'note',          name: 'Nota',            icon: StickyNote,  color: 'text-amber-400',   bg: 'bg-amber-500/10'   },
-    ],
-  },
-  {
     category: 'Entrada',
     nodes: [
-      { type: 'prompt',        name: 'Prompt',          icon: Type,        color: 'text-blue-400',    bg: 'bg-blue-500/10'    },
-      { type: 'referenceImage',name: 'Imagem de Ref.',  icon: ImageIcon,   color: 'text-orange-400',  bg: 'bg-orange-500/10'  },
+      { type: 'referenceImage', name: 'Entrada de Imagem', icon: ImageIcon, color: 'text-orange-400', bg: 'bg-orange-500/10' },
+      { type: 'prompt',         name: 'Prompt',            icon: Type,      color: 'text-blue-400',   bg: 'bg-blue-500/10'   },
     ],
   },
   {
-    category: 'Gerar Imagem',
+    category: 'Saída',
     nodes: [
-      { type: 'text2image',    name: 'Text → Image',    icon: ImageIcon,   color: 'text-violet-400',  bg: 'bg-violet-500/10'  },
-      { type: 'image2image',   name: 'Image → Image',   icon: Wand2,       color: 'text-fuchsia-400', bg: 'bg-fuchsia-500/10' },
-      { type: 'generator',     name: 'Gerador (legado)',icon: Sparkles,    color: 'text-violet-400',  bg: 'bg-violet-500/10'  },
-    ],
-  },
-  {
-    category: 'Gerar Vídeo',
-    nodes: [
-      { type: 'text2video',    name: 'Text → Video',    icon: Video,       color: 'text-cyan-400',    bg: 'bg-cyan-500/10'    },
-      { type: 'image2video',   name: 'Image → Video',   icon: Clapperboard,color: 'text-teal-400',    bg: 'bg-teal-500/10'    },
-    ],
-  },
-  {
-    category: 'Transformar',
-    nodes: [
-      { type: 'upscale',         name: 'Upscale',         icon: ArrowUpRight,color: 'text-amber-400',   bg: 'bg-amber-500/10'   },
-      { type: 'backgroundRemover',name: 'Remover Fundo',  icon: Eraser,      color: 'text-rose-400',    bg: 'bg-rose-500/10'    },
-      { type: 'merge',           name: 'Merge/Composite', icon: Layers,      color: 'text-purple-400',  bg: 'bg-purple-500/10'  },
-    ],
-  },
-  {
-    category: 'Output',
-    nodes: [
-      { type: 'gallery',       name: 'Galeria',         icon: Gallery,     color: 'text-indigo-400',  bg: 'bg-indigo-500/10'  },
-    ],
-  },
-  {
-    category: 'Fluxo',
-    nodes: [
-      { type: 'condition',  name: 'Condição',       icon: GitBranch,  color: 'text-yellow-400',  bg: 'bg-yellow-500/10'  },
-      { type: 'iterator',   name: 'Iterador',       icon: RefreshCw,  color: 'text-lime-400',    bg: 'bg-lime-500/10'    },
-      { type: 'delay',      name: 'Delay',          icon: Timer,      color: 'text-slate-400',   bg: 'bg-slate-500/10'   },
-    ],
-  },
-  {
-    category: 'Avançado',
-    nodes: [
-      { type: 'httpRequest', name: 'HTTP Request',  icon: Globe,      color: 'text-sky-400',     bg: 'bg-sky-500/10'     },
-      { type: 'instance',   name: 'WaveSpeed',      icon: Sparkles,   color: 'text-orange-400',  bg: 'bg-orange-500/10'  },
+      { type: 'imageOutput', name: 'Saída de Imagem', icon: Sparkles, color: 'text-violet-400', bg: 'bg-violet-500/10' },
+      { type: 'videoOutput', name: 'Saída de Vídeo',  icon: Video,    color: 'text-cyan-400',   bg: 'bg-cyan-500/10'   },
     ],
   },
 ];

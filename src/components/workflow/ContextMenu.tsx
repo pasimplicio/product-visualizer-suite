@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Copy, Trash2, Type, ImageIcon, Wand2, Video, ArrowUpRight, Eraser } from 'lucide-react';
+import { Copy, Trash2, Type, ImageIcon, Sparkles, Video } from 'lucide-react';
 
 interface ContextMenuProps {
   x: number;
@@ -12,12 +12,10 @@ interface ContextMenuProps {
 }
 
 const QUICK_ADD = [
-  { type: 'prompt',     label: 'Prompt',          icon: Type,         color: 'text-blue-400' },
-  { type: 'text2image', label: 'Text → Image',    icon: ImageIcon,    color: 'text-violet-400' },
-  { type: 'image2image',label: 'Image → Image',   icon: Wand2,        color: 'text-fuchsia-400' },
-  { type: 'text2video', label: 'Text → Video',    icon: Video,        color: 'text-cyan-400' },
-  { type: 'upscale',    label: 'Upscale',         icon: ArrowUpRight, color: 'text-amber-400' },
-  { type: 'backgroundRemover', label: 'Remover Fundo', icon: Eraser,  color: 'text-rose-400' },
+  { type: 'referenceImage', label: 'Entrada de Imagem', icon: ImageIcon, color: 'text-orange-400' },
+  { type: 'prompt',         label: 'Prompt',            icon: Type,      color: 'text-blue-400'   },
+  { type: 'imageOutput',    label: 'Saída de Imagem',   icon: Sparkles,  color: 'text-violet-400' },
+  { type: 'videoOutput',    label: 'Saída de Vídeo',    icon: Video,     color: 'text-cyan-400'   },
 ];
 
 export const ContextMenu: React.FC<ContextMenuProps> = ({
