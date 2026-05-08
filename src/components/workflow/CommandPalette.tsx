@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  Search, Zap, Type, ImageIcon, Sparkles, ArrowUpRight,
+  Search, Type, ImageIcon, Sparkles, ArrowUpRight,
   Eraser, Video, Clapperboard, Code2, StickyNote, Layers,
   LayoutGrid, Wand2, X, GitBranch, RefreshCw, Globe, Timer,
 } from 'lucide-react';
@@ -12,7 +12,6 @@ interface CommandPaletteProps {
 }
 
 const ALL_NODES = [
-  { type: 'trigger',          name: 'Manual Trigger',    icon: Zap,          color: 'text-emerald-400', desc: 'Inicia a execução do workflow' },
   { type: 'prompt',           name: 'Prompt',            icon: Type,         color: 'text-blue-400',    desc: 'Bloco de texto para prompt' },
   { type: 'referenceImage',   name: 'Imagem de Referência', icon: ImageIcon, color: 'text-orange-400',  desc: 'Carrega uma imagem de referência' },
   { type: 'text2image',       name: 'Text → Image',      icon: ImageIcon,    color: 'text-violet-400',  desc: 'Gera imagem a partir de texto' },

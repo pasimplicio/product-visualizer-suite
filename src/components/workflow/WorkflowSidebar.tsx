@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   LayoutGrid, Boxes, Search, FolderOpen, Wand2,
-  Type, ImageIcon, Sparkles, ArrowUpRight, Eraser, Video, Zap,
+  Type, ImageIcon, Sparkles, ArrowUpRight, Eraser, Video,
   Clapperboard, Code2, StickyNote, Layers, LayoutGrid as Gallery,
   Play, GitBranch, RefreshCw, Globe, Timer,
 } from 'lucide-react';
@@ -24,7 +24,6 @@ const NODE_CATALOG = [
   {
     category: 'Controle',
     nodes: [
-      { type: 'trigger',       name: 'Manual Trigger',  icon: Zap,         color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
       { type: 'promptBuilder', name: 'Prompt Builder',  icon: Code2,       color: 'text-blue-400',    bg: 'bg-blue-500/10'    },
       { type: 'note',          name: 'Nota',            icon: StickyNote,  color: 'text-amber-400',   bg: 'bg-amber-500/10'   },
     ],

@@ -17,15 +17,11 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplate[] = [
     emoji: '📸',
     nodes: [
       {
-        id: 't-1', type: 'trigger', position: { x: 60, y: 180 },
-        data: { label: 'Manual Trigger' },
-      },
-      {
-        id: 't-2', type: 'prompt', position: { x: 240, y: 130 },
+        id: 't-2', type: 'prompt', position: { x: 80, y: 180 },
         data: { label: 'Prompt', prompt: 'Professional product photo, studio lighting, white background, 4K quality' },
       },
       {
-        id: 't-3', type: 'text2image', position: { x: 480, y: 130 },
+        id: 't-3', type: 'text2image', position: { x: 340, y: 180 },
         data: { label: 'Text → Image', modelId: 'nano-banana-2', aspectRatio: '1:1' },
       },
     ],
@@ -40,19 +36,15 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplate[] = [
     emoji: '🎬',
     nodes: [
       {
-        id: 'v-1', type: 'trigger', position: { x: 60, y: 200 },
-        data: { label: 'Manual Trigger' },
-      },
-      {
-        id: 'v-2', type: 'referenceImage', position: { x: 240, y: 130 },
+        id: 'v-2', type: 'referenceImage', position: { x: 80, y: 100 },
         data: { label: 'Imagem de Ref.', image: null },
       },
       {
-        id: 'v-3', type: 'prompt', position: { x: 240, y: 280 },
+        id: 'v-3', type: 'prompt', position: { x: 80, y: 260 },
         data: { label: 'Prompt', prompt: 'Slow cinematic zoom, smooth motion, studio lighting' },
       },
       {
-        id: 'v-4', type: 'image2video', position: { x: 500, y: 200 },
+        id: 'v-4', type: 'image2video', position: { x: 360, y: 170 },
         data: { label: 'Image → Video', modelId: 'veo-3.1-lite', aspectRatio: '16:9', resolution: '720p' },
       },
     ],
@@ -68,23 +60,19 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplate[] = [
     emoji: '🎭',
     nodes: [
       {
-        id: 'b-1', type: 'trigger', position: { x: 60, y: 250 },
-        data: { label: 'Manual Trigger' },
-      },
-      {
-        id: 'b-2', type: 'referenceImage', position: { x: 240, y: 150 },
+        id: 'b-2', type: 'referenceImage', position: { x: 80, y: 100 },
         data: { label: 'Produto', image: null },
       },
       {
-        id: 'b-3', type: 'backgroundRemover', position: { x: 460, y: 150 },
+        id: 'b-3', type: 'backgroundRemover', position: { x: 320, y: 100 },
         data: { label: 'Remover Fundo' },
       },
       {
-        id: 'b-4', type: 'prompt', position: { x: 240, y: 320 },
+        id: 'b-4', type: 'prompt', position: { x: 80, y: 280 },
         data: { label: 'Novo Cenário', prompt: 'Luxury kitchen counter, marble background, warm sunlight, professional photography' },
       },
       {
-        id: 'b-5', type: 'merge', position: { x: 700, y: 220 },
+        id: 'b-5', type: 'merge', position: { x: 580, y: 180 },
         data: { label: 'Composição Final', mergeInstruction: 'Place the product from image A naturally on the scene in image B. Match lighting and perspective. Make it look photorealistic.' },
       },
     ],
@@ -101,27 +89,23 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplate[] = [
     emoji: '🎨',
     nodes: [
       {
-        id: 'p-1', type: 'trigger', position: { x: 60, y: 250 },
-        data: { label: 'Manual Trigger' },
-      },
-      {
-        id: 'p-2', type: 'referenceImage', position: { x: 240, y: 150 },
+        id: 'p-2', type: 'referenceImage', position: { x: 80, y: 180 },
         data: { label: 'Produto Base', image: null },
       },
       {
-        id: 'p-3', type: 'upscale', position: { x: 460, y: 150 },
+        id: 'p-3', type: 'upscale', position: { x: 320, y: 180 },
         data: { label: 'Upscale' },
       },
       {
-        id: 'p-4', type: 'image2image', position: { x: 700, y: 80 },
+        id: 'p-4', type: 'image2image', position: { x: 560, y: 80 },
         data: { label: 'Variação 1', prompt: 'Same product, black matte finish, dark studio background', modelId: 'nano-banana-2', aspectRatio: '1:1' },
       },
       {
-        id: 'p-5', type: 'image2image', position: { x: 700, y: 260 },
+        id: 'p-5', type: 'image2image', position: { x: 560, y: 280 },
         data: { label: 'Variação 2', prompt: 'Same product, white glossy finish, bright minimalist background', modelId: 'nano-banana-2', aspectRatio: '1:1' },
       },
       {
-        id: 'p-6', type: 'gallery', position: { x: 960, y: 160 },
+        id: 'p-6', type: 'gallery', position: { x: 820, y: 170 },
         data: { label: 'Galeria', images: [] },
       },
     ],

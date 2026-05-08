@@ -2,7 +2,6 @@ import { type Node, type Edge } from '@xyflow/react';
 
 /** Todos os tipos de nó suportados */
 export type NodeType =
-  | 'trigger'
   | 'prompt'
   | 'referenceImage'
   | 'generator'
@@ -98,7 +97,6 @@ export interface WorkflowNodeData extends Record<string, unknown> {
   onUpdate?: (id: string, updates: Partial<WorkflowNodeData>) => void;
   onDelete?: (id: string) => void;
   onSelect?: (id: string) => void;
-  onRunWorkflow?: () => void;
 }
 
 export type WorkflowNode = Node<WorkflowNodeData, NodeType>;

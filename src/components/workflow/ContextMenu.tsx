@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Copy, Trash2, Zap, Type, ImageIcon, Wand2, Video, ArrowUpRight, Eraser } from 'lucide-react';
+import { Copy, Trash2, Type, ImageIcon, Wand2, Video, ArrowUpRight, Eraser } from 'lucide-react';
 
 interface ContextMenuProps {
   x: number;
@@ -12,7 +12,6 @@ interface ContextMenuProps {
 }
 
 const QUICK_ADD = [
-  { type: 'trigger',    label: 'Manual Trigger',  icon: Zap,          color: 'text-emerald-400' },
   { type: 'prompt',     label: 'Prompt',          icon: Type,         color: 'text-blue-400' },
   { type: 'text2image', label: 'Text → Image',    icon: ImageIcon,    color: 'text-violet-400' },
   { type: 'image2image',label: 'Image → Image',   icon: Wand2,        color: 'text-fuchsia-400' },

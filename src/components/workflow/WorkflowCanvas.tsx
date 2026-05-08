@@ -22,7 +22,6 @@ import { GeneratorNode } from './nodes/GeneratorNode';
 import { ImageOutputNode } from './nodes/ImageOutputNode';
 import { UpscaleNode } from './nodes/UpscaleNode';
 import { BackgroundRemoverNode } from './nodes/BackgroundRemoverNode';
-import { ManualTriggerNode } from './nodes/ManualTriggerNode';
 import { Text2ImageNode } from './nodes/Text2ImageNode';
 import { Image2ImageNode } from './nodes/Image2ImageNode';
 import { Text2VideoNode } from './nodes/Text2VideoNode';
@@ -49,7 +48,6 @@ import { useLibrary } from '@/context/library-context';
 import { toast } from 'sonner';
 
 const nodeTypes = {
-  trigger: ManualTriggerNode,
   prompt: PromptNode,
   referenceImage: ReferenceImageNode,
   generator: GeneratorNode,
@@ -149,14 +147,13 @@ const WorkflowCanvasInner = ({ workflowName, onWorkflowNameChange }: WorkflowCan
   // ─── Injetar callbacks em todos os nós ────────────────────────────────
 
   const injectCallbacks = useCallback(
-    (nds: WorkflowNode[], runFn: () => void): WorkflowNode[] =>
+    (nds: WorkflowNode[]): WorkflowNode[] =>
       nds.map((node) => ({
         ...node,
         data: {
           ...node.data,
           onUpdate: onUpdateNode,
           onDelete: onDeleteNode,
-          ...(node.type === 'trigger' ? { onRunWorkflow: runFn } : {}),
         },
       })),
     [onUpdateNode, onDeleteNode]
@@ -218,7 +215,7 @@ const WorkflowCanvasInner = ({ workflowName, onWorkflowNameChange }: WorkflowCan
       if (e.detail?.id && e.detail?.updates) onUpdateNode(e.detail.id, e.detail.updates);
     };
     window.addEventListener('workflow-node-update', handler);
-    setNodes((nds) => injectCallbacks(nds, runWorkflow));
+    setNodes((nds) => injectCallbacks(nds));
     return () => window.removeEventListener('workflow-node-update', handler);
   }, [onUpdateNode, injectCallbacks, runWorkflow]);
 
@@ -290,22 +287,22 @@ const WorkflowCanvasInner = ({ workflowName, onWorkflowNameChange }: WorkflowCan
     historyIndexRef.current--;
     const snap = historyRef.current[historyIndexRef.current];
     isTravelingRef.current = true;
-    setNodes(injectCallbacks(snap.nodes, runWorkflow));
+    setNodes(injectCallbacks(snap.nodes));
     setEdges(snap.edges);
     isTravelingRef.current = false;
     toast.info('Desfeito');
-  }, [injectCallbacks, runWorkflow]);
+  }, [injectCallbacks]);
 
   const redo = useCallback(() => {
     if (historyIndexRef.current >= historyRef.current.length - 1) return;
     historyIndexRef.current++;
     const snap = historyRef.current[historyIndexRef.current];
     isTravelingRef.current = true;
-    setNodes(injectCallbacks(snap.nodes, runWorkflow));
+    setNodes(injectCallbacks(snap.nodes));
     setEdges(snap.edges);
     isTravelingRef.current = false;
     toast.info('Refeito');
-  }, [injectCallbacks, runWorkflow]);
+  }, [injectCallbacks]);
 
   // ─── Keyboard shortcuts ────────────────────────────────────────────────
 
@@ -394,7 +391,7 @@ const WorkflowCanvasInner = ({ workflowName, onWorkflowNameChange }: WorkflowCan
     (type: string, position?: { x: number; y: number }) => {
       nodeCounter++;
       const labelMap: Record<string, string> = {
-        trigger: 'Manual Trigger', prompt: 'Prompt', referenceImage: 'Entrada de Imagem',
+        prompt: 'Prompt', referenceImage: 'Entrada de Imagem',
         generator: 'Gerador', imageOutput: `Output ${nodeCounter}`,
         upscale: 'Upscale', backgroundRemover: 'BG Remove',
         text2image: 'Text → Image', image2image: 'Image → Image',
@@ -405,7 +402,7 @@ const WorkflowCanvasInner = ({ workflowName, onWorkflowNameChange }: WorkflowCan
         iterator: 'Iterador', httpRequest: 'HTTP Request', delay: 'Delay',
       };
       const dataMap: Record<string, Partial<WorkflowNodeData>> = {
-        trigger: {}, prompt: { prompt: '' }, referenceImage: { image: null },
+        prompt: { prompt: '' }, referenceImage: { image: null },
         generator: { modelId: 'nano-banana-2', modelType: 'image', aspectRatio: '1:1', resolution: '2K', thinkingLevel: 'Minimal' },
         imageOutput: {}, upscale: {}, backgroundRemover: {},
         text2image: { modelId: 'nano-banana-2', aspectRatio: '1:1' },
@@ -432,7 +429,6 @@ const WorkflowCanvasInner = ({ workflowName, onWorkflowNameChange }: WorkflowCan
           ...dataMap[type],
           onUpdate: onUpdateNode,
           onDelete: onDeleteNode,
-          ...(type === 'trigger' ? { onRunWorkflow: runWorkflow } : {}),
         },
       };
 
@@ -506,7 +502,7 @@ const WorkflowCanvasInner = ({ workflowName, onWorkflowNameChange }: WorkflowCan
         try {
           const data = JSON.parse(ev.target?.result as string);
           if (!data.nodes || !data.edges) throw new Error('Arquivo inválido');
-          const importedNodes = injectCallbacks(data.nodes, runWorkflow);
+          const importedNodes = injectCallbacks(data.nodes);
           setNodes(importedNodes);
           setEdges(data.edges);
           if (data.name && onWorkflowNameChange) onWorkflowNameChange(data.name);
@@ -519,7 +515,7 @@ const WorkflowCanvasInner = ({ workflowName, onWorkflowNameChange }: WorkflowCan
       reader.readAsText(file);
     };
     input.click();
-  }, [injectCallbacks, runWorkflow, onWorkflowNameChange, pushHistory]);
+  }, [injectCallbacks, onWorkflowNameChange, pushHistory]);
 
   // ─── Load template ─────────────────────────────────────────────────────
 
@@ -527,7 +523,7 @@ const WorkflowCanvasInner = ({ workflowName, onWorkflowNameChange }: WorkflowCan
     (templateId: string) => {
       const tmpl = WORKFLOW_TEMPLATES.find((t) => t.id === templateId);
       if (!tmpl) return;
-      const importedNodes = injectCallbacks(tmpl.nodes as WorkflowNode[], runWorkflow);
+      const importedNodes = injectCallbacks(tmpl.nodes as WorkflowNode[]);
       setNodes(importedNodes);
       setEdges(tmpl.edges);
       if (onWorkflowNameChange) onWorkflowNameChange(tmpl.name);

@@ -40,7 +40,7 @@ export interface EngineContext {
 // ─── Nós que não precisam de execução pelo engine ─────────────────────────
 
 const PASSIVE_TYPES = new Set([
-  'trigger', 'imageOutput', 'prompt', 'referenceImage',
+  'imageOutput', 'prompt', 'referenceImage',
   'promptBuilder', 'note', 'gallery', 'instance',
 ]);
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   Type, ImageIcon, Sparkles, ArrowUpRight, Eraser,
-  Play, Loader2, History, Zap, Undo2, Redo2,
+  Play, Loader2, History, Undo2, Redo2,
   Download, Upload, Search,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -29,8 +29,6 @@ export const CanvasToolbar: React.FC<CanvasToolbarProps> = ({
   onExport, onImport, onOpenCommandPalette,
 }) => {
   const nodeTools = [
-    { icon: Zap,        label: 'Trigger',          action: () => onAddNode('trigger'),            color: 'hover:text-emerald-400' },
-    { separator: true },
     { icon: Type,       label: 'Prompt',            action: () => onAddNode('prompt') },
     { icon: ImageIcon,  label: 'Entrada de Imagem', action: () => onAddNode('referenceImage') },
     { icon: Sparkles,   label: 'Gerador',           action: () => onAddNode('generator') },
