@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import {
   LayoutGrid, Boxes, Search, FolderOpen, Wand2,
-  Type, ImageIcon, Sparkles, ArrowUpRight, Eraser, Video,
+  Type, ImageIcon, Sparkles, ArrowUpRight, Eraser, Video, Zap,
+  Clapperboard, Code2, StickyNote, Layers, LayoutGrid as Gallery,
+  Play, GitBranch, RefreshCw, Globe, Timer,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { WORKFLOW_TEMPLATES } from '@/lib/workflow/templates';
 
 interface WorkflowSidebarProps {
   onAddNode: (type: string) => void;
@@ -19,18 +22,62 @@ const SIDEBAR_TABS = [
 
 const NODE_CATALOG = [
   {
-    category: 'Principal',
+    category: 'Controle',
     nodes: [
-      { type: 'prompt', name: 'Prompt', icon: Type, color: 'text-blue-400', bg: 'bg-blue-500/10' },
-      { type: 'referenceImage', name: 'Entrada de Imagem', icon: ImageIcon, color: 'text-orange-400', bg: 'bg-orange-500/10' },
-      { type: 'generator', name: 'Gerador', icon: Sparkles, color: 'text-violet-400', bg: 'bg-violet-500/10' },
+      { type: 'trigger',       name: 'Manual Trigger',  icon: Zap,         color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+      { type: 'promptBuilder', name: 'Prompt Builder',  icon: Code2,       color: 'text-blue-400',    bg: 'bg-blue-500/10'    },
+      { type: 'note',          name: 'Nota',            icon: StickyNote,  color: 'text-amber-400',   bg: 'bg-amber-500/10'   },
     ],
   },
   {
-    category: 'Aprimoramento',
+    category: 'Entrada',
     nodes: [
-      { type: 'upscale', name: 'Melhorar Res.', icon: ArrowUpRight, color: 'text-amber-400', bg: 'bg-amber-500/10' },
-      { type: 'backgroundRemover', name: 'Remover Fundo', icon: Eraser, color: 'text-rose-400', bg: 'bg-rose-500/10' },
+      { type: 'prompt',        name: 'Prompt',          icon: Type,        color: 'text-blue-400',    bg: 'bg-blue-500/10'    },
+      { type: 'referenceImage',name: 'Imagem de Ref.',  icon: ImageIcon,   color: 'text-orange-400',  bg: 'bg-orange-500/10'  },
+    ],
+  },
+  {
+    category: 'Gerar Imagem',
+    nodes: [
+      { type: 'text2image',    name: 'Text → Image',    icon: ImageIcon,   color: 'text-violet-400',  bg: 'bg-violet-500/10'  },
+      { type: 'image2image',   name: 'Image → Image',   icon: Wand2,       color: 'text-fuchsia-400', bg: 'bg-fuchsia-500/10' },
+      { type: 'generator',     name: 'Gerador (legado)',icon: Sparkles,    color: 'text-violet-400',  bg: 'bg-violet-500/10'  },
+    ],
+  },
+  {
+    category: 'Gerar Vídeo',
+    nodes: [
+      { type: 'text2video',    name: 'Text → Video',    icon: Video,       color: 'text-cyan-400',    bg: 'bg-cyan-500/10'    },
+      { type: 'image2video',   name: 'Image → Video',   icon: Clapperboard,color: 'text-teal-400',    bg: 'bg-teal-500/10'    },
+    ],
+  },
+  {
+    category: 'Transformar',
+    nodes: [
+      { type: 'upscale',         name: 'Upscale',         icon: ArrowUpRight,color: 'text-amber-400',   bg: 'bg-amber-500/10'   },
+      { type: 'backgroundRemover',name: 'Remover Fundo',  icon: Eraser,      color: 'text-rose-400',    bg: 'bg-rose-500/10'    },
+      { type: 'merge',           name: 'Merge/Composite', icon: Layers,      color: 'text-purple-400',  bg: 'bg-purple-500/10'  },
+    ],
+  },
+  {
+    category: 'Output',
+    nodes: [
+      { type: 'gallery',       name: 'Galeria',         icon: Gallery,     color: 'text-indigo-400',  bg: 'bg-indigo-500/10'  },
+    ],
+  },
+  {
+    category: 'Fluxo',
+    nodes: [
+      { type: 'condition',  name: 'Condição',       icon: GitBranch,  color: 'text-yellow-400',  bg: 'bg-yellow-500/10'  },
+      { type: 'iterator',   name: 'Iterador',       icon: RefreshCw,  color: 'text-lime-400',    bg: 'bg-lime-500/10'    },
+      { type: 'delay',      name: 'Delay',          icon: Timer,      color: 'text-slate-400',   bg: 'bg-slate-500/10'   },
+    ],
+  },
+  {
+    category: 'Avançado',
+    nodes: [
+      { type: 'httpRequest', name: 'HTTP Request',  icon: Globe,      color: 'text-sky-400',     bg: 'bg-sky-500/10'     },
+      { type: 'instance',   name: 'WaveSpeed',      icon: Sparkles,   color: 'text-orange-400',  bg: 'bg-orange-500/10'  },
     ],
   },
 ];
@@ -167,10 +214,22 @@ export const WorkflowSidebar: React.FC<WorkflowSidebarProps> = ({ onAddNode }) =
           )}
 
           {activeTab === 'builder' && (
-            <div className="flex-1 flex items-center justify-center px-4">
-              <p className="text-[10px] text-muted-foreground text-center font-medium">
-                Templates de workflow em breve
-              </p>
+            <div className="flex-1 overflow-y-auto px-2 py-2 space-y-2">
+              <p className="text-[9px] text-muted-foreground px-1 pb-1 uppercase tracking-widest font-bold">Templates</p>
+              {WORKFLOW_TEMPLATES.map((tmpl) => (
+                <button
+                  key={tmpl.id}
+                  onClick={() => window.dispatchEvent(new CustomEvent('workflow-load-template', { detail: { templateId: tmpl.id } }))}
+                  className="w-full text-left p-2.5 rounded-xl border border-border bg-background/50 hover:bg-accent hover:border-primary/30 transition-all group"
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-base">{tmpl.emoji}</span>
+                    <span className="text-[11px] font-bold text-foreground group-hover:text-primary transition-colors">{tmpl.name}</span>
+                    <Play className="w-2.5 h-2.5 text-muted-foreground/0 group-hover:text-primary/60 transition-colors ml-auto" />
+                  </div>
+                  <p className="text-[9px] text-muted-foreground leading-relaxed pl-6">{tmpl.description}</p>
+                </button>
+              ))}
             </div>
           )}
         </div>

@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { WorkflowCanvas } from '@/components/workflow/WorkflowCanvas';
-import { Sparkles, Share2, ChevronDown, LogOut, Coins, Sun, Moon, Library } from 'lucide-react';
+import { Sparkles, Share2, ChevronDown, LogOut, Coins, Sun, Moon, Library, Pencil, Check } from 'lucide-react';
 import { Toaster } from '@/components/ui/sonner';
 import { useAuth } from '@/context/auth-context';
 import { useLibrary } from '@/context/library-context';
@@ -11,7 +11,16 @@ const Index = () => {
   const { user, profile, signOut } = useAuth();
   const { openLibrary } = useLibrary();
   const { theme, setTheme } = useTheme();
-  const [showMenu, setShowMenu] = React.useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [workflowName, setWorkflowName] = useState('Meu Workflow');
+  const [editingName, setEditingName] = useState(false);
+  const nameInputRef = useRef<HTMLInputElement>(null);
+
+  const startEditingName = () => {
+    setEditingName(true);
+    setTimeout(() => { nameInputRef.current?.select(); }, 30);
+  };
+  const commitName = () => setEditingName(false);
 
   return (
     <div className="flex h-screen w-full flex-col bg-background text-foreground overflow-hidden">
@@ -29,10 +38,38 @@ const Index = () => {
             <span className="text-[9px] text-muted-foreground font-medium border border-border px-1.5 py-0.5 rounded">
               BETA
             </span>
+            <span className="text-[8px] text-muted-foreground/50 font-medium hidden sm:inline">
+              by PSDev Sistemas
+            </span>
           </div>
         </div>
 
-        {/* Center: Workflow name (Removido para limpeza) */}
+        {/* Center: Editable workflow name */}
+        <div className="flex items-center gap-1.5">
+          {editingName ? (
+            <div className="flex items-center gap-1.5">
+              <input
+                ref={nameInputRef}
+                value={workflowName}
+                onChange={(e) => setWorkflowName(e.target.value)}
+                onBlur={commitName}
+                onKeyDown={(e) => { if (e.key === 'Enter') commitName(); if (e.key === 'Escape') commitName(); }}
+                className="bg-transparent border-b border-primary/50 text-sm font-semibold text-foreground focus:outline-none w-40 text-center"
+              />
+              <button onClick={commitName} className="text-emerald-400 hover:text-emerald-300 transition-colors">
+                <Check className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={startEditingName}
+              className="flex items-center gap-1.5 group text-sm font-semibold text-foreground/80 hover:text-foreground transition-colors"
+            >
+              <span>{workflowName}</span>
+              <Pencil className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+            </button>
+          )}
+        </div>
 
         {/* Right: Actions */}
         <div className="flex items-center gap-3">
@@ -108,7 +145,7 @@ const Index = () => {
 
       {/* Main Canvas */}
       <main className="relative flex-1 overflow-hidden">
-        <WorkflowCanvas />
+        <WorkflowCanvas workflowName={workflowName} onWorkflowNameChange={setWorkflowName} />
       </main>
 
       <LibraryModal />

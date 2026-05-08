@@ -423,6 +423,79 @@ export class GeminiService {
     });
   }
 
+  /**
+   * Gera imagem enviando múltiplas imagens de referência (usado pelo MergeNode).
+   * Envia todas as imagens como inline_data parts antes do prompt de texto.
+   */
+  static async generateImageMulti(config: {
+    prompt: string;
+    referenceImages: string[];
+    aspectRatio?: string;
+    modelId?: string;
+  }): Promise<GeminiImageResponse> {
+    this.validateConfig();
+
+    const model = getGeminiModel(config.modelId || 'nano-banana-2');
+    if (!model) {
+      return { success: false, error: `Modelo "${config.modelId}" não encontrado.` };
+    }
+
+    const parts: Array<Record<string, unknown>> = [];
+
+    for (const img of config.referenceImages) {
+      const { mimeType, base64Data } = this.parseDataUrl(img);
+      parts.push({ inline_data: { mime_type: mimeType, data: base64Data } });
+    }
+    parts.push({ text: config.prompt });
+
+    const requestBody: any = {
+      contents: [{ parts }],
+      generationConfig: {
+        responseModalities: ['TEXT', 'IMAGE'],
+        ...(config.aspectRatio ? { imageConfig: { aspectRatio: config.aspectRatio } } : {}),
+      },
+    };
+
+    try {
+      const url = `${this.getBaseUrl()}/v1beta/models/${model.apiModel}:generateContent`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(requestBody),
+      });
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        return { success: false, error: errData?.error?.message || `Erro HTTP ${response.status}` };
+      }
+
+      const data = await response.json();
+      const responseParts = data?.candidates?.[0]?.content?.parts || [];
+
+      let imageUrl = '';
+      for (const part of responseParts) {
+        if (part.inlineData || part.inline_data) {
+          const inlineData = part.inlineData || part.inline_data;
+          const base64 = inlineData.data;
+          const mime = inlineData.mimeType || inlineData.mime_type || 'image/png';
+          const byteString = atob(base64);
+          const ab = new ArrayBuffer(byteString.length);
+          const ia = new Uint8Array(ab);
+          for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
+          imageUrl = URL.createObjectURL(new Blob([ab], { type: mime }));
+        }
+      }
+
+      if (!imageUrl) {
+        return { success: false, error: 'Modelo não retornou imagem. Tente um prompt diferente.' };
+      }
+
+      return { success: true, data: { imageUrl, modelId: model.id } };
+    } catch (err: any) {
+      return { success: false, error: err.message || 'Erro de conexão com a API Gemini' };
+    }
+  }
+
   /** Converte Data URL para Blob */
   static async dataUrlToBlob(dataUrl: string): Promise<Blob> {
     const response = await fetch(dataUrl);
