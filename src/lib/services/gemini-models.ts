@@ -80,7 +80,7 @@ export const GEMINI_MODELS: GeminiModelInfo[] = [
   },
   {
     id: 'nano-banana-legacy',
-    apiModel: 'gemini-2.0-flash-exp',
+    apiModel: 'gemini-2.5-flash-image',
     name: 'Flash (Gratuito)',
     type: 'image',
     description: 'Gratuito. Até 1500 imagens/dia. Ideal para uso diário.',
