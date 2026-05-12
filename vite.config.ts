@@ -14,10 +14,10 @@ export default defineConfig(() => ({
         rewrite: (path) => path.replace(/^\/api\/gemini/, ''),
         secure: true,
       },
-      '/api/wavespeed': {
-        target: 'https://api.wavespeed.ai',
+      '/api/hf': {
+        target: 'https://api-inference.huggingface.co',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/wavespeed/, ''),
+        rewrite: (path) => path.replace(/^\/api\/hf/, ''),
         secure: true,
       },
     },

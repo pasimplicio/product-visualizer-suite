@@ -3,13 +3,16 @@ import { Handle, Position, NodeProps } from '@xyflow/react';
 import { ImageIcon, Loader2, CheckCircle2, Play, RotateCcw, Trash2, GripVertical, Download } from 'lucide-react';
 import { WorkflowNodeData } from '@/lib/workflow/types';
 import { GeminiService } from '@/lib/services/gemini-service';
+import { HuggingFaceService } from '@/lib/services/huggingface-service';
 import { useLibrary } from '@/context/library-context';
 import { toast } from 'sonner';
 
 const ASPECT_RATIOS = ['1:1', '3:4', '4:3', '9:16', '16:9'];
 const MODELS = [
-  { id: 'nano-banana-2',   label: 'Nano Banana 2',   badge: '⚡' },
-  { id: 'nano-banana-pro', label: 'Nano Banana Pro',  badge: '★'  },
+  { id: 'flux-schnell',    label: 'FLUX Schnell — Grátis', badge: '🆓' },
+  { id: 'flux-dev',        label: 'FLUX Dev — Grátis',     badge: '🆓' },
+  { id: 'nano-banana-2',   label: 'Nano Banana 2',          badge: '⚡' },
+  { id: 'nano-banana-pro', label: 'Nano Banana Pro',         badge: '★'  },
 ];
 
 export const ImageOutputNode = ({ data, id, selected }: NodeProps<WorkflowNodeData>) => {
@@ -27,15 +30,26 @@ export const ImageOutputNode = ({ data, id, selected }: NodeProps<WorkflowNodeDa
     if (!canRun) return;
     update({ status: 'generating', progress: 5, resultImage: undefined });
     try {
-      const result = await GeminiService.generateImage({
-        prompt: (data.prompt as string) || 'Professional product photo, studio lighting, high quality',
-        modelId: (data.modelId as string) || 'nano-banana-2',
-        referenceImage: (data.image as string) || undefined,
-        aspectRatio: (data.aspectRatio as string) || '1:1',
-      });
-      if (!result.success || !result.data?.imageUrl) throw new Error(result.error);
-      update({ status: 'completed', resultImage: result.data.imageUrl, progress: 100 });
-      addLibraryItem(result.data.imageUrl, 'image', data.prompt as string);
+      const modelId = (data.modelId as string) || 'flux-schnell';
+      const prompt   = (data.prompt as string) || 'Professional product photo, studio lighting, high quality';
+
+      let imageUrl: string;
+      if (modelId.startsWith('flux-')) {
+        const result = await HuggingFaceService.generateImage({ prompt, modelId });
+        if (!result.success || !result.data?.imageUrl) throw new Error(result.error);
+        imageUrl = result.data.imageUrl;
+      } else {
+        const result = await GeminiService.generateImage({
+          prompt, modelId,
+          referenceImage: (data.image as string) || undefined,
+          aspectRatio: (data.aspectRatio as string) || '1:1',
+        });
+        if (!result.success || !result.data?.imageUrl) throw new Error(result.error);
+        imageUrl = result.data.imageUrl;
+      }
+
+      update({ status: 'completed', resultImage: imageUrl, progress: 100 });
+      addLibraryItem(imageUrl, 'image', data.prompt as string);
       toast.success('Imagem gerada!');
     } catch (err: any) {
       update({ status: 'error', progress: 0 });

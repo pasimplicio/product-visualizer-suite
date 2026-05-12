@@ -90,6 +90,31 @@ export const GEMINI_MODELS: GeminiModelInfo[] = [
     supportedAspectRatios: ['1:1', '3:4', '4:3', '9:16', '16:9'],
   },
 
+  // ─── MODELOS DE IMAGEM (Hugging Face FLUX) ───
+  {
+    id: 'flux-schnell',
+    apiModel: 'black-forest-labs/FLUX.1-schnell',
+    name: 'FLUX Schnell',
+    type: 'image',
+    description: 'Gratuito. Rápido, boa qualidade. ~50 imagens/dia.',
+    icon: '🆓',
+    tier: 'free',
+    creditCost: 0,
+    hot: true,
+    supportedAspectRatios: ['1:1', '3:4', '4:3', '9:16', '16:9'],
+  },
+  {
+    id: 'flux-dev',
+    apiModel: 'black-forest-labs/FLUX.1-dev',
+    name: 'FLUX Dev',
+    type: 'image',
+    description: 'Gratuito. Alta qualidade, mais lento. ~50 imagens/dia.',
+    icon: '🆓',
+    tier: 'free',
+    creditCost: 0,
+    supportedAspectRatios: ['1:1', '3:4', '4:3', '9:16', '16:9'],
+  },
+
   // ─── MODELOS DE VÍDEO (Veo 3.1) ───
   {
     id: 'veo-3.1',

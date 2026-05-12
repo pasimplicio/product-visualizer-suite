@@ -1,0 +1,70 @@
+/**
+ * Hugging Face Inference Service — ProductSuite
+ * ----------------------------------------------
+ * Geração de imagem gratuita via Hugging Face Inference API.
+ * Modelos: FLUX.1-schnell (rápido) e FLUX.1-dev (qualidade)
+ *
+ * Auth: Bearer token (VITE_HF_TOKEN)
+ * Docs: https://huggingface.co/docs/api-inference
+ */
+
+const HF_MODELS: Record<string, string> = {
+  'flux-schnell': '/models/black-forest-labs/FLUX.1-schnell',
+  'flux-dev':     '/models/black-forest-labs/FLUX.1-dev',
+};
+
+export interface HFImageResponse {
+  success: boolean;
+  data?: { imageUrl: string };
+  error?: string;
+}
+
+export class HuggingFaceService {
+  private static token = import.meta.env.VITE_HF_TOKEN || '';
+
+  private static getBaseUrl(): string {
+    return import.meta.env.DEV
+      ? '/api/hf'
+      : 'https://api-inference.huggingface.co';
+  }
+
+  static async generateImage(config: {
+    prompt: string;
+    modelId: string;
+  }): Promise<HFImageResponse> {
+    if (!this.token) {
+      return { success: false, error: 'Token Hugging Face não configurado. Adicione VITE_HF_TOKEN no .env' };
+    }
+
+    const modelPath = HF_MODELS[config.modelId];
+    if (!modelPath) {
+      return { success: false, error: `Modelo "${config.modelId}" não encontrado.` };
+    }
+
+    try {
+      const response = await fetch(`${this.getBaseUrl()}${modelPath}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ inputs: config.prompt }),
+      });
+
+      if (response.status === 503) {
+        return { success: false, error: 'Modelo carregando. Aguarde 20 segundos e tente novamente.' };
+      }
+
+      if (!response.ok) {
+        const text = await response.text().catch(() => '');
+        return { success: false, error: `Erro ${response.status}: ${text || 'Falha na requisição'}` };
+      }
+
+      const blob = await response.blob();
+      const imageUrl = URL.createObjectURL(blob);
+      return { success: true, data: { imageUrl } };
+    } catch (err: any) {
+      return { success: false, error: err.message || 'Erro de conexão com Hugging Face' };
+    }
+  }
+}

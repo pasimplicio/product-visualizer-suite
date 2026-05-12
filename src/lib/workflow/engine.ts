@@ -1,4 +1,5 @@
 import { GeminiService } from '@/lib/services/gemini-service';
+import { HuggingFaceService } from '@/lib/services/huggingface-service';
 import type { WorkflowNode, WorkflowEdge, WorkflowNodeData } from './types';
 
 // ─── Tipos de execução ──────────────────────────────────────────────────────
@@ -100,15 +101,26 @@ async function executeNodeOperation(
   switch (node.type) {
     case 'imageOutput': {
       onProgress(20);
-      const result = await GeminiService.generateImage({
-        prompt: (data.prompt as string) || 'Professional product photo, studio lighting',
-        modelId: (data.modelId as string) || 'nano-banana-2',
-        referenceImage: (data.image as string) || undefined,
-        aspectRatio: (data.aspectRatio as string) || '1:1',
-      });
-      if (!result.success || !result.data?.imageUrl) throw new Error(result.error || 'Falha na geração de imagem');
-      context.addLibraryItem(result.data.imageUrl, 'image', data.prompt as string);
-      return { status: 'completed', resultImage: result.data.imageUrl, progress: 100 };
+      const modelId = (data.modelId as string) || 'flux-schnell';
+      const prompt  = (data.prompt as string) || 'Professional product photo, studio lighting';
+      let imageUrl: string;
+
+      if (modelId.startsWith('flux-')) {
+        const result = await HuggingFaceService.generateImage({ prompt, modelId });
+        if (!result.success || !result.data?.imageUrl) throw new Error(result.error || 'Falha na geração de imagem');
+        imageUrl = result.data.imageUrl;
+      } else {
+        const result = await GeminiService.generateImage({
+          prompt, modelId,
+          referenceImage: (data.image as string) || undefined,
+          aspectRatio: (data.aspectRatio as string) || '1:1',
+        });
+        if (!result.success || !result.data?.imageUrl) throw new Error(result.error || 'Falha na geração de imagem');
+        imageUrl = result.data.imageUrl;
+      }
+
+      context.addLibraryItem(imageUrl, 'image', data.prompt as string);
+      return { status: 'completed', resultImage: imageUrl, progress: 100 };
     }
 
     case 'videoOutput': {
