@@ -85,7 +85,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Escutar autenticação do Firebase (onAuthStateChanged)
   useEffect(() => {
+    // Timeout de segurança: se Firebase não responder em 5s, libera o loading
+    const timeout = setTimeout(() => setLoading(false), 5000);
+
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      clearTimeout(timeout);
       try {
         if (firebaseUser) {
           setUser(firebaseUser);
@@ -101,7 +105,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     });
 
-    return () => unsubscribe();
+    return () => {
+      clearTimeout(timeout);
+      unsubscribe();
+    };
   }, []);
 
   // Escutar mudanças no perfil em tempo real (Firestore)
