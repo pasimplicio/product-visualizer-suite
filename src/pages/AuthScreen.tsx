@@ -56,7 +56,7 @@ const AuthScreen: React.FC = () => {
             Product<span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-cyan-400">Suite</span>
           </h1>
           <p className="text-white/40 text-sm mt-2 font-medium">
-            AI Node-Based Creative Studio
+            Criação de imagens e vídeos por IA
           </p>
         </div>
 
