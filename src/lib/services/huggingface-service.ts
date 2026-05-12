@@ -1,11 +1,11 @@
 /**
  * Hugging Face Inference Service — ProductSuite
  * ----------------------------------------------
- * Geração de imagem gratuita via Hugging Face Inference API.
+ * Geração de imagem gratuita via Hugging Face Inference Providers API (2025).
  * Modelos: FLUX.1-schnell (rápido) e FLUX.1-dev (qualidade)
  *
  * Auth: Bearer token (VITE_HF_TOKEN)
- * Docs: https://huggingface.co/docs/api-inference
+ * Endpoint: router.huggingface.co/hf-inference
  */
 
 const HF_MODELS: Record<string, string> = {
@@ -27,7 +27,7 @@ export class HuggingFaceService {
   private static getBaseUrl(): string {
     return import.meta.env.DEV
       ? '/api/hf'
-      : 'https://api-inference.huggingface.co';
+      : 'https://router.huggingface.co';
   }
 
   static async generateImage(config: {
@@ -43,7 +43,7 @@ export class HuggingFaceService {
       return { success: false, error: `Modelo "${config.modelId}" não encontrado.` };
     }
 
-    const url = `${this.getBaseUrl()}/pipeline/text-to-image/${model}`;
+    const url = `${this.getBaseUrl()}/hf-inference/models/${model}`;
 
     try {
       const response = await fetch(url, {
@@ -53,10 +53,7 @@ export class HuggingFaceService {
           'Content-Type': 'application/json',
           'x-wait-for-model': 'true',
         },
-        body: JSON.stringify({
-          inputs: config.prompt,
-          parameters: { num_inference_steps: 4 },
-        }),
+        body: JSON.stringify({ inputs: config.prompt }),
       });
 
       if (response.status === 503) {

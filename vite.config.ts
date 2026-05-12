@@ -15,7 +15,7 @@ export default defineConfig(() => ({
         secure: true,
       },
       '/api/hf': {
-        target: 'https://api-inference.huggingface.co',
+        target: 'https://router.huggingface.co',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api\/hf/, ''),
         secure: true,
