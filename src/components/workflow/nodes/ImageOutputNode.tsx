@@ -8,9 +8,8 @@ import { toast } from 'sonner';
 
 const ASPECT_RATIOS = ['1:1', '3:4', '4:3', '9:16', '16:9'];
 const MODELS = [
-  { id: 'nano-banana-legacy', label: 'Flash — Gratuito', badge: '🆓' },
-  { id: 'nano-banana-legacy',      label: 'Nano Banana 2',   badge: '⚡' },
-  { id: 'nano-banana-pro',    label: 'Nano Banana Pro',  badge: '★'  },
+  { id: 'nano-banana-2',   label: 'Nano Banana 2',   badge: '⚡' },
+  { id: 'nano-banana-pro', label: 'Nano Banana Pro',  badge: '★'  },
 ];
 
 export const ImageOutputNode = ({ data, id, selected }: NodeProps<WorkflowNodeData>) => {
@@ -30,7 +29,7 @@ export const ImageOutputNode = ({ data, id, selected }: NodeProps<WorkflowNodeDa
     try {
       const result = await GeminiService.generateImage({
         prompt: (data.prompt as string) || 'Professional product photo, studio lighting, high quality',
-        modelId: (data.modelId as string) || 'nano-banana-legacy',
+        modelId: (data.modelId as string) || 'nano-banana-2',
         referenceImage: (data.image as string) || undefined,
         aspectRatio: (data.aspectRatio as string) || '1:1',
       });
@@ -85,7 +84,7 @@ export const ImageOutputNode = ({ data, id, selected }: NodeProps<WorkflowNodeDa
       <div className="px-3 py-2.5 space-y-2">
         {/* Model + Aspect Ratio */}
         <div className="flex gap-2">
-          <select value={(data.modelId as string) || 'nano-banana-legacy'}
+          <select value={(data.modelId as string) || 'nano-banana-2'}
             onChange={(e) => { e.stopPropagation(); update({ modelId: e.target.value }); }}
             onClick={(e) => e.stopPropagation()}
             className="flex-1 h-7 bg-background border border-input rounded-lg px-2 text-[10px] text-foreground focus:outline-none focus:border-violet-500/50 appearance-none cursor-pointer">
