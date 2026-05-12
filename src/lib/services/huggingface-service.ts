@@ -8,6 +8,8 @@
  * Docs: https://huggingface.co/docs/api-inference
  */
 
+const HF_BASE = 'https://api-inference.huggingface.co';
+
 const HF_MODELS: Record<string, string> = {
   'flux-schnell': '/models/black-forest-labs/FLUX.1-schnell',
   'flux-dev':     '/models/black-forest-labs/FLUX.1-dev',
@@ -20,12 +22,8 @@ export interface HFImageResponse {
 }
 
 export class HuggingFaceService {
-  private static token = import.meta.env.VITE_HF_TOKEN || '';
-
-  private static getBaseUrl(): string {
-    return import.meta.env.DEV
-      ? '/api/hf'
-      : 'https://api-inference.huggingface.co';
+  private static get token() {
+    return import.meta.env.VITE_HF_TOKEN || '';
   }
 
   static async generateImage(config: {
@@ -42,17 +40,21 @@ export class HuggingFaceService {
     }
 
     try {
-      const response = await fetch(`${this.getBaseUrl()}${modelPath}`, {
+      const response = await fetch(`${HF_BASE}${modelPath}`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${this.token}`,
           'Content-Type': 'application/json',
+          'x-wait-for-model': 'true',
         },
-        body: JSON.stringify({ inputs: config.prompt }),
+        body: JSON.stringify({
+          inputs: config.prompt,
+          parameters: { num_inference_steps: 4 },
+        }),
       });
 
       if (response.status === 503) {
-        return { success: false, error: 'Modelo carregando. Aguarde 20 segundos e tente novamente.' };
+        return { success: false, error: 'Modelo carregando. Tente novamente em 20 segundos.' };
       }
 
       if (!response.ok) {
