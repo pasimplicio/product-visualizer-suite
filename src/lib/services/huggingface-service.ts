@@ -8,11 +8,9 @@
  * Docs: https://huggingface.co/docs/api-inference
  */
 
-const HF_BASE = 'https://api-inference.huggingface.co';
-
 const HF_MODELS: Record<string, string> = {
-  'flux-schnell': '/models/black-forest-labs/FLUX.1-schnell',
-  'flux-dev':     '/models/black-forest-labs/FLUX.1-dev',
+  'flux-schnell': 'black-forest-labs/FLUX.1-schnell',
+  'flux-dev':     'black-forest-labs/FLUX.1-dev',
 };
 
 export interface HFImageResponse {
@@ -26,6 +24,12 @@ export class HuggingFaceService {
     return import.meta.env.VITE_HF_TOKEN || '';
   }
 
+  private static getBaseUrl(): string {
+    return import.meta.env.DEV
+      ? '/api/hf'
+      : 'https://api-inference.huggingface.co';
+  }
+
   static async generateImage(config: {
     prompt: string;
     modelId: string;
@@ -34,13 +38,15 @@ export class HuggingFaceService {
       return { success: false, error: 'Token Hugging Face não configurado. Adicione VITE_HF_TOKEN no .env' };
     }
 
-    const modelPath = HF_MODELS[config.modelId];
-    if (!modelPath) {
+    const model = HF_MODELS[config.modelId];
+    if (!model) {
       return { success: false, error: `Modelo "${config.modelId}" não encontrado.` };
     }
 
+    const url = `${this.getBaseUrl()}/pipeline/text-to-image/${model}`;
+
     try {
-      const response = await fetch(`${HF_BASE}${modelPath}`, {
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${this.token}`,
