@@ -86,14 +86,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Escutar autenticação do Firebase (onAuthStateChanged)
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      if (firebaseUser) {
-        setUser(firebaseUser);
-        await ensureUserProfile(firebaseUser);
-      } else {
-        setUser(null);
-        setProfile(null);
+      try {
+        if (firebaseUser) {
+          setUser(firebaseUser);
+          await ensureUserProfile(firebaseUser);
+        } else {
+          setUser(null);
+          setProfile(null);
+        }
+      } catch (err) {
+        console.error('[Auth] Erro ao inicializar perfil:', err);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     });
 
     return () => unsubscribe();
